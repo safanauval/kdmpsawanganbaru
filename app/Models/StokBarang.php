@@ -16,6 +16,7 @@ class StokBarang extends Model
         'kode_barang',
         'nama_barang',
         'kategori_id',
+        'gudang_id',
         'stok',
         'harga_beli',
         'harga_jual',
@@ -29,6 +30,10 @@ class StokBarang extends Model
         return $this->belongsTo(Kategori::class);
     }
 
+    public function gudang()
+    {
+        return $this->belongsTo(Gudang::class);
+    }
     /**
      * Accessor untuk mendapatkan URL data gambar (base64).
      */

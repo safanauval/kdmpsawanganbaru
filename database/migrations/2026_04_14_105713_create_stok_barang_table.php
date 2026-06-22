@@ -12,13 +12,14 @@ return new class extends Migration {
 
         Schema::create('stok_barang', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_barang')->unique();
-            $table->string('nama_barang');
-            $table->foreignId('kategori_id')->nullable()->constrained('kategoris')->nullOnDelete();
+            $table->string('kode_barang', 20)->unique();
+            $table->string('nama_barang', 100);
+            $table->foreignId('kategori_id')->nullable()->constrained('kategori')->nullOnDelete();
+            $table->foreignId('gudang_id')->nullable()->constrained('gudang')->nullOnDelete();
             $table->integer('stok')->default(0);
-            $table->decimal('harga_beli', 15, 2);
-            $table->decimal('harga_jual', 15, 2);
-            $table->string('satuan')->default('pcs');
+            $table->decimal('harga_beli', 15, 0);
+            $table->decimal('harga_jual', 15, 0);
+            $table->string('satuan', 50)->default('pcs');
             $table->text('deskripsi')->nullable();
             $table->binary('gambar')->required();
             $table->timestamps();

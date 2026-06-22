@@ -1,5 +1,5 @@
 <x-layouts::app :title="__('Dashboard')">
-    <div class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
+    <div class="flex h-full w-full flex-1 flex-col rounded-xl">
         <!-- Header Selamat Datang -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between sm:p-8 p-2">
             <div>
@@ -15,30 +15,30 @@
 
         {{-- Main Content Area --}}
         <div class="flex-1 overflow-y-auto">
-            {{-- Overview Cards --}}
+            <!-- Overview Card -->
             <div
-                class="flex flex-wrap min-w-[200px] justify-between border-neutral-200 dark:border-neutral-700 p-2 gap-2">
-                {{-- Card Total Produk --}}
-                <flux:card class="flex-1 rounded-xl border border-b p-4">
+                class="flex flex-wrap min-w-[200px] justify-between border-neutral-200 dark:border-neutral-700 p-2 gap-4">
+                <!-- Card Transaksi -->
+                <flux:card class="flex-1 rounded-xl border border-b p-2">
                     <div>
                         <flux:text class="flex items-center gap-2 text-black">
-                            <flux:icon.building-storefront variant="solid" class="h-4 w-4 text-purple-600" />
-                            <span class="text-base font-medium text-black dark:text-white">Total Produk</span>
+                            <flux:icon.banknotes variant="solid" class="h-4 w-4 text-purple-600" />
+                            <span class="text-base font-medium text-black dark:text-white">Total Transaksi</span>
                         </flux:text>
-                        <flux:heading size="xl" class="mb-1 p-4">{{ $totalProducts }}</flux:heading>
+                        <flux:heading size="xl" class="mb-1 p-4">{{ $totalTransaction }}</flux:heading>
                         <div class="flex items-center gap-2">
                             <flux:icon.archive-box variant="micro" class="text-green-600 dark:text-green-500" />
-                            <span class="text-sm text-green-600 dark:text-green-500">produk</span>
+                            <span class="text-sm text-green-600 dark:text-green-500">Produk</span>
                         </div>
                     </div>
                 </flux:card>
 
-                {{-- Card Total Kategori --}}
+                <!-- Card Total Kategori -->
                 <flux:card color="blue"
-                    class="flex-1 rounded-xl border bg-black-300 hover:bg-zinc-400 dark:hover:bg-zinc-700 p-4">
+                    class="flex-1 rounded-xl border bg-black-300 hover:bg-zinc-400 dark:hover:bg-zinc-700 p-2">
                     <div>
                         <flux:text class="flex items-center gap-2 text-black">
-                            <flux:icon.tag variant="solid" class="h-4 w-4 text-red-600" />
+                            <flux:icon.building-storefront variant="solid" class="h-4 w-4 text-red-600" />
                             <span class="text-base font-medium text-black dark:text-white">Total Kategori</span>
                         </flux:text>
                         <flux:heading size="xl" class="mb-1 p-4">{{ $totalCategories }}</flux:heading>
@@ -49,42 +49,143 @@
                     </div>
                 </flux:card>
 
-                {{-- Card Total User --}}
-                <flux:card color="blue" class="flex-1 rounded-xl border hover:bg-zinc-400 dark:hover:bg-zinc-700 p-4">
+                <!-- Card Total Member -->
+                <flux:card color="blue" class="flex-1 rounded-xl border hover:bg-zinc-400 dark:hover:bg-zinc-700 p-2">
                     <div>
                         <flux:text class="flex items-center gap-2 text-black">
                             <flux:icon.users variant="solid" class="h-4 w-4 text-blue-600" />
-                            <span class="text-base font-medium text-black dark:text-white">Total Pengguna</span>
+                            <span class="text-base font-medium text-black dark:text-white">Total Anggota</span>
                         </flux:text>
-                        <flux:heading size="xl" class="mb-1 p-4">{{ $totalUsers }}</flux:heading>
+                        <flux:heading size="xl" class="mb-1 p-4">{{ $totalAnggota }}</flux:heading>
                         <div class="flex items-center gap-2">
                             <flux:icon.user-plus variant="micro" class="text-green-600 dark:text-green-500" />
-                            <span class="text-sm text-green-600 dark:text-green-500">Pengguna aktif</span>
+                            <span class="text-sm text-green-600 dark:text-green-500">Anggota aktif</span>
+                        </div>
+                    </div>
+                </flux:card>
+            </div>
+
+            <!-- Stok Produk & Statistik per minggu -->
+            <div class="flex border-neutral-200 dark:border-neutral-700 p-2 gap-4">
+                <!-- Statistik per minggu -->
+                <flux:card class="space-y-4 h-40 dark:text-white" style="width: 66%;" align="start">
+                    {{-- Header card --}}
+                    <div class="flex-1 rounded-xl p-2">
+                        <div class="m-10 bg-white dark:bg-white-800 dark:text-white rounded shadow"
+                            style="text-color:white; height: 250px">
+                            {!! $chart->container() !!}
+                        </div>
+                    </div>
+                    <script src="{{ $chart->cdn() }}"></script>
+                    {{ $chart->script() }}
+                </flux:card>
+
+                <!-- Stok Produk -->
+                <flux:card class="space-y-4" style="width: 34%;" align="end">
+                    {{-- Header card --}}
+                    <div class="flex items-center justify-between">
+                        <flux:heading class="dark:text-white" size="lg" variant="strong">Status Stok
+                            Barang
+                        </flux:heading>
+                        <flux:badge color="blue" variant="solid" rounded>Total
+                            {{ $inStock + $lowStock + $outOfStock }} item
+                        </flux:badge>
+                    </div>
+                    <div class="space-y-3">
+                        {{-- Stok Tersedia --}}
+                        <flux:card class="flex items-center justify-between p-3 rounded-lg border"
+                            style="background:#e6ffe6;">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                                    <flux:icon.check class="h-5 w-5 text-white" />
+                                </span>
+                                <div class="text-left">
+                                    <flux:text class="text-sm font-medium text-green-800">Stok Tersedia</flux:text>
+                                    <flux:text class="text-xs text-green-600 dark:text-green-400">Siap dijual
+                                    </flux:text>
+                                </div>
+                            </div>
+                            <span class="text-2xl font-bold text-black">{{ $inStock }}</span>
+                        </flux:card>
+
+                        {{-- Stok Menipis --}}
+                        <flux:card class="flex items-center justify-between p-3 rounded-lg border"
+                            style="background: #ffffe6;">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="flex-shrink-0 w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center">
+                                    <flux:icon.exclamation-triangle class="h-5 w-5 text-white" />
+                                </span>
+                                <div class="text-left">
+                                    <flux:text class="text-sm font-medium text-yellow-800">Stok Menipis</flux:text>
+                                    <flux:text class="text-xs text-yellow-600 dark:text-yellow-400">Perlu restock
+                                    </flux:text>
+                                </div>
+                            </div>
+                            <span class="text-2xl font-bold text-black">{{ $lowStock }}</span>
+                        </flux:card>
+
+                        {{-- Stok Habis --}}
+                        <flux:card class="flex items-center justify-between p-3 rounded-lg border"
+                            style="background: #ffe6e6;">
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="flex-shrink-0 w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+                                    <flux:icon.x-mark class="h-5 w-5 text-white" />
+                                </span>
+                                <div class="text-left">
+                                    <flux:text class="text-sm font-medium text-red-800">Stok Habis</flux:text>
+                                    <flux:text class="text-xs text-red-600 dark:text-red-400">Segera restock</flux:text>
+                                </div>
+                            </div>
+                            <span class="text-2xl font-bold text-red-700 dark:text-red-300">{{ $outOfStock }}</span>
+                        </flux:card>
+                    </div>
+                </flux:card>
+            </div>
+
+
+            <!-- Pengeluaran dan Pemasukkan -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 p-2 gap-4">
+                <!-- Card Pemasukkan -->
+                <flux:card class="rounded-xl border hover:bg-zinc-400 dark:hover:bg-zinc-700 ">
+                    <div>
+                        <flux:text class="flex items-center gap-2 text-black">
+                            <flux:icon.currency-dollar variant="solid" class="h-4 w-4 text-green-600" />
+                            <span class="text-base font-medium text-black dark:text-white">Pemasukan</span>
+                        </flux:text>
+                        <flux:heading size="xl" class="mb-1 p-4">Rp {{ number_format($totalRevenue, 0, ',', '.') }}
+                        </flux:heading>
+                        <div class="flex items-center gap-2">
+                            <flux:icon.arrow-trending-up variant="micro" class="text-green-600 dark:text-green-500" />
+                            <span class="text-sm text-green-600 dark:text-green-500">Total Pendapatan</span>
                         </div>
                     </div>
                 </flux:card>
 
-                {{-- Card Stok Barang --}}
-                <flux:card color="blue" class="flex-1 rounded-xl border hover:bg-zinc-400 dark:hover:bg-zinc-700 p-4">
+                <!-- Card Pengeluaran -->
+                <flux:card class="rounded-xl border hover:bg-zinc-400 dark:hover:bg-zinc-700">
                     <div>
                         <flux:text class="flex items-center gap-2 text-black">
-                            <flux:icon.clipboard-document-list variant="solid" class="h-4 w-4 text-amber-500" />
-                            <span class="text-base font-medium text-black dark:text-white">Stok Barang</span>
+                            <flux:icon.arrow-down-circle variant="solid" class="h-4 w-4 text-red-600" />
+                            <span class="text-base font-medium text-black dark:text-white">Pengeluaran</span>
                         </flux:text>
-                        <flux:heading size="xl" class="mb-1 p-4">{{ $lowStock }}</flux:heading>
+                        <flux:heading size="xl" class="mb-1 p-4">Rp {{ number_format($totalExpenses, 0, ',', '.') }}
+                        </flux:heading>
                         <div class="flex items-center gap-2">
-                            <flux:icon.sparkles variant="micro" class="text-green-600 dark:text-green-500" />
-                            <span class="text-sm text-green-600 dark:text-green-500">Stok Menipis</span>
+                            <flux:icon.arrow-trending-down variant="micro" class="text-red-600 dark:text-red-500" />
+                            <span class="text-sm text-red-600 dark:text-red-500">Total Biaya</span>
                         </div>
                     </div>
                 </flux:card>
             </div>
 
             <!-- Produk Terbaru & User Terbaru (2 kolom) -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 p-2 gap-2">
+            <div class="grid grid-cols-1 lg:grid-cols-2 p-2 gap-4">
                 <!-- Produk Terbaru -->
                 <flux:card>
-                    <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between p-4">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Produk Terbaru</h3>
                         <flux:button href="{{ route('stok-barang.create') }}" size="sm" icon="plus" wire:navigate>
                             Tambah
@@ -132,101 +233,41 @@
                 </flux:card>
 
                 <!-- User Terbaru (Admin only) -->
-                @can('admin')
-                    <flux:card>
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">👥 User Terbaru</h3>
-                            <flux:button href="{{ route('users.index') }}" variant="ghost" size="sm" icon="user-plus"
-                                wire:navigate>
-                                Kelola
-                            </flux:button>
-                        </div>
-                        <div class="space-y-2">
-                            @forelse($latestUsers as $user)
-                                <div
-                                    class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors">
-                                    <flux:avatar :name="$user->name" size="sm" />
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $user->name }}
-                                        </p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $user->email }}</p>
-                                    </div>
-                                    <div>
-                                        <flux:badge size="sm" color="{{ $user->role === 'admin' ? 'blue' : 'zinc' }}">
-                                            {{ ucfirst($user->role) }}
-                                        </flux:badge>
-                                    </div>
+                <flux:card>
+                    <div class="flex items-center justify-between p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">User Terbaru</h3>
+                        <flux:button href="{{ route('users.index') }}" size="sm" icon="user-plus" wire:navigate>
+                            Kelola
+                        </flux:button>
+                    </div>
+                    <div class="space-y-2">
+                        @forelse($latestUsers as $user)
+                            <div
+                                class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors">
+                                <flux:avatar :name="$user->name" size="sm" />
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $user->name }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $user->email }}</p>
                                 </div>
-                            @empty
-                                <p class="text-gray-500 dark:text-gray-400 text-sm text-center py-6">Tidak ada user baru</p>
-                            @endforelse
-                        </div>
-                        <div class="mt-4 pt-2 border-t border-gray-200 dark:border-neutral-700">
-                            <flux:button href="{{ route('users.index') }}" variant="ghost" size="sm" icon="arrow-right"
-                                wire:navigate class="w-full justify-between">
-                                Lihat Semua User
-                                <flux:icon.chevron-right class="w-4 h-4" />
-                            </flux:button>
-                        </div>
-                    </flux:card>
-                @endcan
+                                <div>
+                                    <flux:badge size="sm" color="{{ $user->role === 'admin' ? 'blue' : 'yellow' }}">
+                                        {{ ucfirst($user->role) }}
+                                    </flux:badge>
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-gray-500 dark:text-gray-400 text-sm text-center py-6">Tidak ada user baru</p>
+                        @endforelse
+                    </div>
+                    <div class="mt-4 pt-2 border-t border-gray-200 dark:border-neutral-700">
+                        <flux:button href="{{ route('users.index') }}" variant="primary" color="blue" size="sm"
+                            icon="arrow-right" wire:navigate class="w-full justify-between">
+                            Lihat Semua User
+                        </flux:button>
+                    </div>
+                </flux:card>
             </div>
         </div>
-
-        @push('scripts')
-            <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const ctx = document.getElementById('salesChart').getContext('2d');
-                    const salesData = @json($salesChartData);
-
-                    new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: salesData.labels,
-                            datasets: [{
-                                label: 'Pendapatan (Rp)',
-                                data: salesData.data,
-                                borderColor: '#3b82f6',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                borderWidth: 2,
-                                tension: 0.3,
-                                fill: true,
-                                pointBackgroundColor: '#3b82f6',
-                                pointBorderColor: '#ffffff',
-                                pointBorderWidth: 2,
-                                pointRadius: 4,
-                                pointHoverRadius: 6
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function (context) {
-                                            return 'Rp ' + context.raw.toLocaleString('id-ID');
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        callback: function (value) {
-                                            return 'Rp ' + value.toLocaleString('id-ID');
-                                        }
-                                    },
-                                    grid: { color: 'rgba(156, 163, 175, 0.2)' }
-                                },
-                                x: { grid: { display: false } }
-                            }
-                        }
-                    });
-                });
-            </script>
-        @endpush
+    </div>
 </x-layouts::app>

@@ -8,7 +8,8 @@
 
 <body class="min-h-screen bg-white dark:bg-zinc-800 antialiased">
     {{-- HEADER UTAMA (Full Width) --}}
-    <flux:header sticky collapsible="mobile" class="transparent border border-zinc-700 dark:border-zinc-700"
+    <flux:header sticky collapsible="mobile"
+        class="transparent border-b dark:bg-zinc-900 border-zinc-700 dark:border-zinc-700"
         style="backdrop-filter: blur(10px);">
 
         {{-- Logo di Header --}}
@@ -19,13 +20,13 @@
         {{-- Ikon Aksi (Search, Settings, Help) --}}
         <flux:navbar class="me-4">
             <flux:dropdown x-data align="end">
-                <flux:button variant="subtle" square class="group" aria-label="Preferred color scheme">
-                    <flux:icon.sun x-show="$flux.appearance === 'light'" variant="mini"
-                        class="text-zinc-500 dark:text-white" />
-                    <flux:icon.moon x-show="$flux.appearance === 'dark'" variant="mini"
-                        class="text-zinc-500 dark:text-white" />
-                    <flux:icon.moon x-show="$flux.appearance === 'system' && $flux.dark" variant="mini" />
-                    <flux:icon.sun x-show="$flux.appearance === 'system' && ! $flux.dark" variant="mini" />
+                <flux:button variant="subtle" square class="group " aria-label="Preferred color scheme">
+                    <flux:icon.sun class="size-8" x-show="$flux.appearance === 'light'" variant="solid" />
+                    <flux:icon.moon class="size-8" x-show="$flux.appearance === 'dark'" variant="solid" />
+                    <flux:icon.moon class="size-8" x-show="$flux.appearance === 'system' && $flux.dark"
+                        variant="solid" />
+                    <flux:icon.sun class="size-8" x-show="$flux.appearance === 'system' && ! $flux.dark"
+                        variant="solid" />
                 </flux:button>
 
                 <flux:menu>
@@ -102,18 +103,24 @@
 
     {{-- SIDEBAR UTAMA (Navigasi Aplikasi) --}}
     <flux:sidebar sticky collapsible="mobile"
-        class="border-e border-black-200 bg-black-500 dark:border-zinc-700 dark:bg-zinc-900">
+        class="border-r border-black-200 bg-black-900 dark:border-zinc-700 dark:bg-zinc-900">
 
         <flux:sidebar.nav>
             {{-- Grup Platform (Dashboard) --}}
-            <flux:sidebar.group :heading="__('Platform')" class="grid">
-                <flux:sidebar.item icon="home" :href="route('kasir')" :current="request()->routeIs('kasir')"
+            <flux:sidebar.group :heading="__('Menu')" class="grid">
+                <flux:sidebar.item icon="calculator" :href="route('kasir')" :current="request()->routeIs('kasir')"
                     wire:navigate>
                     {{ __('Kasir') }}
                 </flux:sidebar.item>
+                <flux:sidebar.item icon="archive-box" :href="route('stok-barang.kasir.index')"
+                    :current="request()->routeIs('stok-barang.kasir.index')" wire:navigate>
+                    {{ __('Stok Barang') }}
+                </flux:sidebar.item>
+                <flux:sidebar.item icon="document-text" :href="route('riwayat-transaksi.kasir.index')"
+                    :current="request()->routeIs('riwayat-transaksi.kasir.index')" wire:navigate>
+                    {{ __('Riwayat Transaksi') }}
+                </flux:sidebar.item>
             </flux:sidebar.group>
-
-            {{-- Grup Transaksi --}}
         </flux:sidebar.nav>
 
         <flux:spacer />
@@ -126,18 +133,24 @@
                 <flux:button type="submit" variant="ghost" size="sm" icon="arrow-right-start-on-rectangle" />
             </form>
         </div>
-        </div>
     </flux:sidebar>
 
     {{ $slot }}
 
     @persist('toast')
     <flux:toast.group>
-        <flux:toast />
+        <flux:toast position="top end" />
+        <!-- Customize top padding for things like navbars... -->
+        <flux:toast position="top end" class="pt-24" />
     </flux:toast.group>
     @endpersist
 
     @fluxScripts
+    <!-- Midtrans Snap -->
+    <script
+        src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
+        data-client-key="{{ config('services.midtrans.client_key') }}">
+        </script>
 </body>
 
 </html>

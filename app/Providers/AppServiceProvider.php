@@ -24,6 +24,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        // Config Midtrans
+        \Midtrans\Config::$serverKey = config('services.midtrans.server_key');
+        \Midtrans\Config::$clientKey = config('services.midtrans.client_key');
+        \Midtrans\Config::$isProduction = config('services.midtrans.is_production');
+        \Midtrans\Config::$isSanitized = config('services.midtrans.is_sanitized');
+        \Midtrans\Config::$is3ds = config('services.midtrans.is_3ds');
+
     }
 
     /**

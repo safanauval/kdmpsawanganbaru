@@ -1,20 +1,32 @@
 <div class="space-y-4">
+    <div class="flex justify-between items-center">
+        <div>
+            <flux:heading size="xl">Stok Barang</flux:heading>
+            <p class="mt-3 text-gray-600 dark:text-gray-400">Kelola inventaris barang koperasi</p>
+        </div>
+    </div>
     {{-- Pencarian --}}
-    <div class="flex gap-4">
-        <div class="flex-1">
-            <flux:input wire:model.live.debounce.300ms="search" placeholder="Cari kode atau nama barang..."
-                icon="magnifying-glass" clearable />
+    <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row gap-4">
+            <div class="flex-1">
+                <flux:input wire:model.live.debounce.100ms="search" placeholder="Cari kode atau nama barang..."
+                    icon="magnifying-glass" clearable />
+            </div>
+            <flux:button wire:click="{{ route('stok-barang.create') }}" variant="primary" color="blue" icon="plus">
+                Tambah Barang
+            </flux:button>
         </div>
     </div>
 
     {{-- Tabel --}}
-    <div class="relative overflow-hidden rounded-xl dark:border-neutral-700 sm:p-8 p-2">
+    <div class="relative overflow-hidden rounded-xl dark:border-neutral-700 sm:p-8 p-1">
         <flux:table container:class="max-h-[600px]">
             <flux:table.columns sticky>
                 <flux:table.column>Gambar</flux:table.column>
                 <flux:table.column>Kode</flux:table.column>
                 <flux:table.column>Nama Barang</flux:table.column>
                 <flux:table.column>Kategori</flux:table.column>
+                <flux:table.column>Gudang</flux:table.column>
                 <flux:table.column align="end">Stok</flux:table.column>
                 <flux:table.column align="end">Harga Beli</flux:table.column>
                 <flux:table.column align="end">Harga Jual</flux:table.column>
@@ -47,6 +59,9 @@
                         <flux:table.cell class="text-neutral-600 dark:text-neutral-400">
                             {{ $item->kategori->nama ?? '-' }}
                         </flux:table.cell>
+                        <flux:table.cell class="text-neutral-600 dark:text-neutral-400">
+                            {{ $item->gudang->nama_gudang ?? '-' }}
+                        </flux:table.cell>
                         <flux:table.cell align="end">
                             <span @class([
                                 'font-medium',
@@ -67,12 +82,12 @@
                         <flux:table.cell align="end">
                             <div class="flex justify-end gap-2">
                                 <flux:button.group>
-                                    <flux:button href="{{ route('stok-barang.edit', $item) }}" size="xs"
+                                    <flux:button href="{{ route('stok-barang.edit', $item) }}" size="sm"
                                         icon="pencil-square" wire:navigate>
                                         Edit
                                     </flux:button>
                                     <flux:button wire:click="delete({{ $item->id }})" wire:confirm="Yakin hapus barang ini?"
-                                        size="xs" icon="trash" variant="danger">
+                                        size="sm" icon="trash" variant="danger">
                                         Hapus
                                     </flux:button>
                                 </flux:button.group>

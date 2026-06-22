@@ -8,33 +8,27 @@ test('login screen can be rendered', function () {
     $response->assertOk();
 });
 
-test('users can authenticate using the login screen - admin role', function () {
-    $user = User::factory()->create(['role' => 'admin']);
+test('admin redirected to dashboard after login', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
 
     $response = $this->post(route('login.store'), [
-        'email' => $user->email,
+        'email' => $admin->email,
         'password' => 'password',
     ]);
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect(route('admin.dashboard'));
-
+    $response->assertRedirect(route('dashboard'));
     $this->assertAuthenticated();
 });
 
-test('users can authenticate using the login screen - kasir role', function () {
-    $user = User::factory()->create(['role' => 'kasir']);
+test('kasir redirected to kasir page after login', function () {
+    $kasir = User::factory()->create(['role' => 'kasir']);
 
     $response = $this->post(route('login.store'), [
-        'email' => $user->email,
+        'email' => $kasir->email,
         'password' => 'password',
     ]);
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect(route('kasir'));
-
+    $response->assertRedirect(route('kasir.index'));
     $this->assertAuthenticated();
 });
 

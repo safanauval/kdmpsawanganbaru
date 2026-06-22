@@ -23,7 +23,7 @@ class StokBarangIndex extends Component
 
     public function render()
     {
-        $stokBarang = StokBarang::with('kategori')
+        $stokBarang = StokBarang::with(['kategori', 'gudang'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('kode_barang', 'like', '%' . $this->search . '%')

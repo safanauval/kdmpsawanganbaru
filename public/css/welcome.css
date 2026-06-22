@@ -1,0 +1,601 @@
+/* ===============================================
+   GLOBAL STYLES & RESET
+=============================================== */
+
+:root {
+    --primary: #065366;
+    --dark-primary: #1e293b;
+    --secondary: #ffffff;
+    --gradient: linear-gradient(135deg, #065366 0%, #3dc9e8 90%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 140px;
+}
+
+body {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color: var(--secondary);
+    color: var(--dark-primary);
+    line-height: 1.5;
+    padding-top: 0;
+}
+
+/* Reveal on scroll */
+.reveal {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 34px;
+}
+
+/* ===============================================
+   NAVBAR MODERN (KAPSUL / PILL STYLE) + TRANSPARAN SAAT HERO
+=============================================== */
+.top-nav {
+    position: fixed;
+    top: 10px;
+    left: 2%;
+    right: 2%;
+    width: 96%;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 30px;
+    align-items: center;
+    padding: 12px 35px;
+    background-color: rgba(255, 255, 255, 0.021);
+    backdrop-filter: blur(8px);
+    z-index: 1200;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Navbar saat di-scroll */
+.top-nav.scrolled {
+    background-color: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(6, 83, 102, 0.304);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+/* Gaya link navigasi (kapsul / pill) */
+.nav-link {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    color: var(--dark-primary);
+}
+
+.nav-center {
+    position: absolute;
+    justify-content: space-between;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 24px;
+    font-weight: 700;
+}
+
+.nav-link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+/* Saat navbar transparan (belum discroll), warna teks putih */
+.top-nav:not(.scrolled) .nav-link {
+    color: var(--secondary);
+}
+
+.top-nav:not(.scrolled) .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Tombol Login (kapsul) - versi outline */
+.btn-login.nav-link {
+    border: 1px solid currentColor;
+    background: transparent;
+    padding: 8px 22px;
+    margin-left: 12px;
+    gap: 10px;
+}
+
+/* Tombol Register (kapsul) - solid */
+.btn-register.nav-link {
+    background-color: var(--primary);
+    color: var(--secondary);
+    border: none;
+    padding: 8px 22px;
+    margin-left: 12px;
+    gap: 10px;
+}
+
+.btn-register.nav-link:hover {
+    background-color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(6, 83, 102, 0.708);
+}
+
+/* Saat navbar transparan, tombol register disesuaikan */
+.top-nav:not(.scrolled) .btn-register.nav-link {
+    background-color: rgba(6, 83, 102, 0.568);
+    color: var(--secondary);
+    border: 1px solid var(--secondary);
+}
+
+.top-nav:not(.scrolled) .btn-register.nav-link:hover {
+    background-color: rgb(6, 83, 102);
+}
+
+.top-nav:not(.scrolled) .btn-login.nav-link {
+    border-color: var(--secondary);
+    color: var(--secondary);
+}
+
+.top-nav:not(.scrolled) .btn-login.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Logo area */
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    background-color: var(--primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.logo-img {
+    width: 28px;
+    filter: brightness(0) invert(1);
+    transition: filter 0.3s;
+}
+
+.logo-text {
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+    background: var(--gradient);
+    background-clip: text;
+    font-weight: 900;
+    font-style: italic;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+/* Saat navbar transparan, logo-text jadi putih solid */
+.top-nav:not(.scrolled) .logo-text {
+    background: none;
+    color: var(--secondary);
+}
+
+.top-nav.scrolled .logo-img {
+    filter: none;
+}
+
+.top-nav.scrolled .logo-text {
+    background: var(--gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+/* === HERO FULLSCREEN === */
+.hero-fullscreen {
+    position: relative;
+    height: 110vh;
+    width: 100%;
+    background-image: url('../img/logo/banner-desktop-hero.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-top: 20px;
+    margin-top: 0;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.40) 0%, rgba(0, 0, 0, 0.5) 100%);
+    z-index: 1;
+}
+
+.hero-content-center {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    padding: 4px;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.hero-content-center h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+.hero-highlight {
+    color: #ffd966;
+}
+
+.hero-desc {
+    font-size: 1rem;
+    margin-bottom: 2px;
+    opacity: 0.95;
+}
+
+.hero-badge {
+    display: inline-block;
+    background-color: #e0f2fe;
+    color: #065366;
+    padding: 4px 4px;
+    border-radius: 40px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-hero-primary {
+    background-color: #065366;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 40px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: 2px solid var(--secondary);
+}
+
+.btn-hero-primary:hover {
+    background-color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-hero-secondary {
+    background-color: transparent;
+    border: 2px solid var(--secondary);
+    color: var(--secondary);
+    padding: 12px 20px;
+    border-radius: 40px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-hero-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-3px);
+}
+
+/* === STATS === */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin: 20px 0 40px;
+    padding: 20px 0;
+}
+
+.stat-item {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.279);
+    padding: 8px 12px;
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.208);
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-number {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--secondary);
+}
+
+.stat-label {
+    color: var(--secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.section-title h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.section-title p {
+    color: #64748b;
+    margin-top: 8px;
+}
+
+/* === LAYANAN === */
+.service {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-top: 140px;
+}
+
+.service h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+
+.services-grid {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 60px;
+}
+
+.service-card {
+    background: transparent;
+    backdrop-filter: blur(8px);
+    padding: 24px 24px;
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: var(--primary) solid 1px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.03);
+    border-color: #949494;
+}
+
+.service-icon {
+    width: 64px;
+    height: 64px;
+    padding: 12px;
+    background: var(--gradient);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 28px;
+    transition: all 0.3s ease;
+}
+
+.service-card:hover .service-icon {
+    transform: scale(1.05);
+}
+
+.service-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #09819f;
+}
+
+.service-card p {
+    color: #065366;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    margin: 40px 0 60px;
+}
+
+/* === BERITA === */
+.news {
+    padding-top: 40px;
+
+}
+
+.news-card {
+    background: transparent;
+    backdrop-filter: blur(8px);
+    padding: 24px 24px;
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: #065366 solid 1px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.news-card:hover {
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08);
+}
+
+.news-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #065366;
+    font-size: 1.1rem;
+}
+
+.news-list {
+    list-style: none;
+}
+
+.news-list li {
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    gap: 12px;
+}
+
+.news-date {
+    color: black;
+    font-size: 0.9rem;
+    text-align: center;
+    min-width: 90px;
+    font-weight: 700;
+}
+
+.news-list a {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.news-list a:hover {
+    color: var(--primary);
+}
+
+/* === KONTAK === */
+.kontak-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    align-items: center;
+}
+
+.kontak-logo {
+    background: var(--gradient);
+    padding: 10px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    transition: all 0.2s;
+}
+
+.kontak-item:hover .kontak-logo {
+    background: rgb(138, 220, 240);
+    color: var(--secondary);
+}
+
+/* === FOOTER === */
+.footer {
+    display: flex;
+    background: var(--gradient);
+    color: var(--secondary);
+    padding: 30px 0;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.footer-content {
+    display: inline-block;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer-copy {
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* ===============================================
+   RESPONSIVE
+=============================================== */
+@media (max-width: 768px) {
+    .top-nav {
+        padding: 12px 20px;
+    }
+
+    .top-nav.scrolled {
+        padding: 8px 20px;
+    }
+
+    .hero-fullscreen {
+        padding-top: 70px;
+    }
+
+    .hero-content-center h1 {
+        font-size: 2rem;
+    }
+
+    .hero-desc {
+        font-size: 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nav-links .hide-mobile {
+        display: none;
+    }
+
+    .container {
+        padding: 0 20px;
+    }
+
+    .nav-link {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+    }
+}

@@ -9,8 +9,8 @@ class KategoriController extends Controller
 {
     public function index()
     {
-        $kategoris = Kategori::latest()->paginate(10);
-        return view('pages.admin.kategori.index', compact('kategoris'));
+        $kategori = Kategori::latest()->paginate(10);
+        return view('pages.admin.kategori.index', compact('kategori'));
     }
 
     public function create()
@@ -21,7 +21,7 @@ class KategoriController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255|unique:kategoris,nama',
+            'nama' => 'required|string|max:30|unique:kategori,nama',
             'deskripsi' => 'nullable|string',
         ]);
 
@@ -44,7 +44,7 @@ class KategoriController extends Controller
     public function update(Request $request, Kategori $kategori)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255|unique:kategoris,nama,' . $kategori->id,
+            'nama' => 'required|string|max:30|unique:kategori,nama,' . $kategori->id,
             'deskripsi' => 'nullable|string',
         ]);
 

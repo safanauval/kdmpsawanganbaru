@@ -8,7 +8,7 @@ class KasirController extends Controller
 {
     public function index()
     {
-        return view('pages.kasir');
+        return view('pages.kasir.index');
     }
 
 }

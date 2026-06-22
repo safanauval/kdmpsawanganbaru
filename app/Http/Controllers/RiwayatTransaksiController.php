@@ -10,4 +10,8 @@ class RiwayatTransaksiController extends Controller
     {
         return view('pages.admin.riwayat-transaksi.index');
     }
+    public function cetak()
+    {
+        return view('pages.admin.riwayat-transaksi.cetak');
+    }
 }

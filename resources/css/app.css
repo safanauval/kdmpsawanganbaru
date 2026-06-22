@@ -45,6 +45,18 @@
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
     }
+
+    /* Untuk Webkit (Chrome, Safari, Edge) */
+    ::-webkit-inner-spin-button,
+    ::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Untuk Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
 }
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {
@@ -52,7 +64,7 @@
 }
 
 [data-flux-label] {
-    @apply  !mb-0 !leading-tight;
+    @apply !mb-0 !leading-tight;
 }
 
 input:focus[data-flux-control],

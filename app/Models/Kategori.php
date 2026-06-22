@@ -17,10 +17,10 @@ class Kategori extends Model
     {
         return $this->hasMany(Kategori::class, 'parent_id');
     }
-    protected $table = 'kategoris';
+    protected $table = 'kategori';
     protected $fillable = ['nama', 'deskripsi'];
 
-    public function stokBarangs()
+    public function stokBarang()
     {
         return $this->hasMany(StokBarang::class);
     }

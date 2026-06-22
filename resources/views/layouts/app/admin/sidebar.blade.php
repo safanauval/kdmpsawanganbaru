@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 
+<link rel="stylesheet" href="">
+
 <head>
     @include('partials.head')
     @fluxAppearance
+    <!-- FlyonUI Chart -->
+    <link rel="stylesheet" href="../path/to/apexcharts/apexcharts.css">
 </head>
 
 <body class="min-h-screen bg-white dark:bg-zinc-800 antialiased">
     {{-- HEADER UTAMA (Full Width) --}}
-    <flux:header sticky collapsible="mobile" class="transparent border border-zinc-700 dark:border-zinc-700"
+    <flux:header sticky collapsible="mobile"
+        class="transparent border-b dark:bg-zinc-900 border-zinc-700 dark:border-zinc-700"
         style="backdrop-filter: blur(10px);">
 
         {{-- Logo di Header --}}
@@ -19,13 +24,13 @@
         {{-- Ikon Aksi (Search, Settings, Help) --}}
         <flux:navbar class="me-4">
             <flux:dropdown x-data align="end">
-                <flux:button variant="subtle" square class="group" aria-label="Preferred color scheme">
-                    <flux:icon.sun x-show="$flux.appearance === 'light'" variant="mini"
-                        class="text-zinc-500 dark:text-white" />
-                    <flux:icon.moon x-show="$flux.appearance === 'dark'" variant="mini"
-                        class="text-zinc-500 dark:text-white" />
-                    <flux:icon.moon x-show="$flux.appearance === 'system' && $flux.dark" variant="mini" />
-                    <flux:icon.sun x-show="$flux.appearance === 'system' && ! $flux.dark" variant="mini" />
+                <flux:button variant="subtle" square class="group " aria-label="Preferred color scheme">
+                    <flux:icon.sun class="size-8" x-show="$flux.appearance === 'light'" variant="solid" />
+                    <flux:icon.moon class="size-8" x-show="$flux.appearance === 'dark'" variant="solid" />
+                    <flux:icon.moon class="size-8" x-show="$flux.appearance === 'system' && $flux.dark"
+                        variant="solid" />
+                    <flux:icon.sun class="size-8" x-show="$flux.appearance === 'system' && ! $flux.dark"
+                        variant="solid" />
                 </flux:button>
 
                 <flux:menu>
@@ -102,45 +107,78 @@
 
     {{-- SIDEBAR UTAMA (Navigasi Aplikasi) --}}
     <flux:sidebar sticky collapsible="mobile"
-        class="border-e border-black-200 bg-black-500 dark:border-zinc-700 dark:bg-zinc-900">
+        class="border-r border-black-200 bg-black-900 dark:border-zinc-700 dark:bg-zinc-900">
 
-        <flux:sidebar.nav>
-            {{-- Grup Platform (Dashboard) --}}
-            <flux:sidebar.group :heading="__('Platform')" class="grid">
-                <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
-                    wire:navigate>
+        <flux:sidebar.nav scrollable style="padding-bottom: 20px; height: calc(100% - 55px);" class="overflow-y-auto">
+            {{-- Grup Platform --}}
+            <flux:sidebar.group :heading="__('Overview')" class="grid">
+                <flux:sidebar.item icon="presentation-chart-bar" :href="route('dashboard')"
+                    :current="request()->routeIs('dashboard')" wire:navigate>
                     {{ __('Dashboard') }}
-                </flux:sidebar.item>
-            </flux:sidebar.group>
-
-            {{-- Grup Manajemen Data --}}
-            <flux:sidebar.group :heading="__('Manajemen Data')" class="grid">
-                <flux:sidebar.item icon="archive-box" :href="route('stok-barang.index')"
-                    :current="request()->routeIs('stok-barang.*')" wire:navigate>
-                    {{ __('Stok Barang') }}
-                </flux:sidebar.item>
-                <flux:sidebar.item icon="tag" :href="route('kategori.index')"
-                    :current="request()->routeIs('kategori.*')" wire:navigate>
-                    {{ __('Kategori') }}
-                </flux:sidebar.item>
-                <flux:sidebar.item icon="shield-check" :href="route('users.index')"
-                    :current="request()->routeIs('user.*')" wire:navigate>
-                    {{ __('User') }}
                 </flux:sidebar.item>
             </flux:sidebar.group>
 
             {{-- Grup Transaksi --}}
             <flux:sidebar.group :heading="__('Transaksi')" class="grid">
+                <flux:sidebar.item icon="calculator" :href="route('admin-kasir')"
+                    :current="request()->routeIs('admin-kasir.*')" wire:navigate>
+                    {{ __('Kasir') }}
+                </flux:sidebar.item>
                 <flux:sidebar.item icon="document-text" :href="route('riwayat-transaksi.index')"
                     :current="request()->routeIs('riwayat-transaksi.*')" wire:navigate>
                     {{ __('Riwayat Transaksi') }}
                 </flux:sidebar.item>
             </flux:sidebar.group>
+
+            {{-- Grup Manajemen Data --}}
+            <flux:sidebar.group :heading="__('Manajemen Data')" class="grid">
+                <flux:sidebar.item icon="clipboard-document-list" :href="route('kategori.index')"
+                    :current="request()->routeIs('kategori.*')" wire:navigate>
+                    {{ __('Kategori') }}
+                </flux:sidebar.item>
+                <flux:sidebar.item icon="archive-box" :href="route('stok-barang.index')"
+                    :current="request()->routeIs('stok-barang.*')" wire:navigate>
+                    {{ __('Stok Barang') }}
+                </flux:sidebar.item>
+                <flux:sidebar.item icon="home" :href="route('gudang.index')" :current="request()->routeIs('gudang.*')"
+                    wire:navigate>
+                    {{ __('Gudang Supplier') }}
+                </flux:sidebar.item>
+                <flux:sidebar.item icon="shield-check" :href="route('users.index')"
+                    :current="request()->routeIs('user.*')" wire:navigate>
+                    {{ __('User') }}
+                </flux:sidebar.item>
+                <flux:sidebar.item icon="cog-6-tooth" :href="route('settings.index')"
+                    :current="request()->routeIs('settings.*')" wire:navigate>
+                    {{ __('Pengaturan') }}
+                </flux:sidebar.item>
+            </flux:sidebar.group>
+
+            {{-- Grup Menu Anggota --}}
+            <div x-data="{ open: false }">
+                <flux:button.group variant="outline" class="w-full justify-between">
+                    <flux:button variant="subtle" size="sm" class="flex-1 justify-start" @click="open = !open">
+                        <flux:text variant="subtle" style="font-weight: 500;"> {{ __('Menu Anggota') }}</flux:text>
+                        <flux:icon.chevron-down style="margin-left: auto;" x-bind:class="{ 'rotate-180': open }"
+                            class="size-4 transition-transform" />
+                    </flux:button>
+                </flux:button.group>
+                <div x-show="open" class="mt-2 space-y-1">
+                    <flux:sidebar.item icon="users" :href="route('anggota.index')"
+                        :current="request()->routeIs('anggota.*')" wire:navigate>
+                        {{ __('Anggota') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="wallet" :href="route('simpanan.index')"
+                        :current="request()->routeIs('simpanan.*')" wire:navigate>
+                        {{ __('Simpanan') }}
+                    </flux:sidebar.item>
+                </div>
+            </div>
         </flux:sidebar.nav>
 
-        <flux:spacer />
 
-        <div class="flex items-center">
+        <div class="fixed bottom-0 flex items-center border-black-200 dark:border-zinc-700 bg-black-900 dark:border-zinc-700 dark:bg-zinc-900"
+            style="black; padding: 10px; width: 230px;">
             <flux:profile class="flex-1 leading-tight" :name="auth()->user()->name"
                 :initials="auth()->user()->initials()" :chevron="false" />
             <form method="POST" action="{{ route('logout') }}">
@@ -148,18 +186,25 @@
                 <flux:button type="submit" variant="ghost" size="sm" icon="arrow-right-start-on-rectangle" />
             </form>
         </div>
-        </div>
     </flux:sidebar>
 
+    {{-- MAIN CONTENT (Area Dinamis) --}}
     {{ $slot }}
 
     @persist('toast')
     <flux:toast.group>
-        <flux:toast />
+        <flux:toast position="top end" />
+        <!-- Customize top padding for things like navbars... -->
+        <flux:toast position="top end" class="pt-24" />
     </flux:toast.group>
     @endpersist
 
     @fluxScripts
+    <!-- Midtrans Snap -->
+    <script
+        src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
+        data-client-key="{{ config('services.midtrans.client_key') }}">
+        </script>
 </body>
 
 </html>

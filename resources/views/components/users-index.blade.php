@@ -11,13 +11,13 @@
     </div>
 
     {{-- Tabel User --}}
-    <div class="relative overflow-hidden rounded-xl border-neutral-200 dark:border-neutral-700 sm:p-8 p-2">
+    <div class="relative overflow-y-auto rounded-xl border-neutral-200 dark:border-neutral-700 sm:p-8 p-1">
         <flux:table>
             <flux:table.columns>
                 <flux:table.column class="w-16">No</flux:table.column>
                 <flux:table.column>Nama</flux:table.column>
                 <flux:table.column>Email</flux:table.column>
-                <flux:table.column>Role</flux:table.column>
+                <flux:table.column align="center">Role</flux:table.column>
                 <flux:table.column align="end">Aksi</flux:table.column>
             </flux:table.columns>
 
@@ -29,14 +29,15 @@
                         </flux:table.cell>
                         <flux:table.cell variant="strong">{{ $user->name }}</flux:table.cell>
                         <flux:table.cell>{{ $user->email }}</flux:table.cell>
-                        <flux:table.cell>
+                        <flux:table.cell align="center">
                             @if($editingUserId === $user->id)
                                 <flux:select wire:model="selectedRole" class="w-32">
                                     <option value="admin">Admin</option>
                                     <option value="kasir">Kasir</option>
                                 </flux:select>
                             @else
-                                <flux:badge size="sm" color="{{ $user->role === 'admin' ? 'blue' : 'red' }}" inset="top bottom">
+                                <flux:badge size="sm" color="{{ $user->role === 'admin' ? 'blue' : 'yellow' }}"
+                                    inset="top bottom">
                                     {{ ucfirst($user->role) }}
                                 </flux:badge>
                             @endif
@@ -44,16 +45,16 @@
                         <flux:table.cell align="end">
                             @if($editingUserId === $user->id)
                                 <flux:button.group>
-                                    <flux:button wire:click="updateRole({{ $user->id }})" size="xs" variant="primary"
+                                    <flux:button wire:click="updateRole({{ $user->id }})" size="sm" variant="primary"
                                         color="blue">
                                         Simpan
                                     </flux:button>
-                                    <flux:button wire:click="cancelEditing" size="xs" variant="danger">
+                                    <flux:button wire:click="cancelEditing" size="sm" variant="danger">
                                         Batal
                                     </flux:button>
                                 </flux:button.group>
                             @else
-                                <flux:button wire:click="startEditing({{ $user->id }}, '{{ $user->role }}')" size="xs"
+                                <flux:button wire:click="startEditing({{ $user->id }}, '{{ $user->role }}')" size="sm"
                                     icon="pencil-square">
                                     Ubah Role
                                 </flux:button>

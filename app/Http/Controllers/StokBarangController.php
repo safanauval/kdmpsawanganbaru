@@ -4,28 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\StokBarang;
 use App\Models\Kategori;
+use App\Models\Gudang;
 use Illuminate\Http\Request;
 
 class StokBarangController extends Controller
 {
     public function index()
     {
-        $stokBarang = StokBarang::with('kategori')->latest()->paginate(10);
+        $stokBarang = StokBarang::with(['kategori', 'gudang'])->latest()->paginate(10);
         return view('pages.admin.stok-barang.index', compact('stokBarang'));
     }
 
     public function create()
     {
-        $kategoris = Kategori::orderBy('nama')->get();
-        return view('pages.admin.stok-barang.create', compact('kategoris'));
+        $kategori = Kategori::orderBy('nama')->get();
+        $gudang = Gudang::orderBy('nama_gudang')->get();
+        return view('pages.admin.stok-barang.create', compact('kategori', 'gudang'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'kode_barang' => 'required|string|unique:stok_barang,kode_barang',
-            'nama_barang' => 'required|string|max:255',
-            'kategori_id' => 'nullable|exists:kategoris,id',
+            'nama_barang' => 'required|string|max:50',
+            'kategori_id' => 'nullable|exists:kategori,id',
+            'gudang_id' => 'nullable|exists:gudang,id',
             'stok' => 'required|integer|min:0',
             'harga_beli' => 'required|numeric|min:0',
             'harga_jual' => 'required|numeric|min:0',
@@ -53,16 +56,18 @@ class StokBarangController extends Controller
 
     public function edit(StokBarang $stokBarang)
     {
-        $kategoris = Kategori::orderBy('nama')->get();
-        return view('pages.admin.stok-barang.edit', compact('stokBarang', 'kategoris'));
+        $kategori = Kategori::orderBy('nama')->get();
+        $gudang = Gudang::orderBy('nama_gudang')->get();
+        return view('pages.admin.stok-barang.edit', compact('stokBarang', 'kategori', 'gudang'));
     }
 
     public function update(Request $request, StokBarang $stokBarang)
     {
         $validated = $request->validate([
-            'kode_barang' => 'required|string|unique:stok_barang,kode_barang,' . $stokBarang->id,
-            'nama_barang' => 'required|string|max:255',
-            'kategori_id' => 'nullable|exists:kategoris,id',
+            'kode_barang' => 'required|string|max:20|unique:stok_barang,kode_barang,' . $stokBarang->id,
+            'nama_barang' => 'required|string|max:50',
+            'kategori_id' => 'nullable|exists:kategori,id',
+            'gudang_id' => 'nullable|exists:gudang,id',
             'stok' => 'required|integer|min:0',
             'harga_beli' => 'required|numeric|min:0',
             'harga_jual' => 'required|numeric|min:0',

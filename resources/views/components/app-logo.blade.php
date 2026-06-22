@@ -14,7 +14,7 @@
             <x-app-logo-icon />
         </x-slot>
     </flux:brand>
-   <flux:heading size="xl" level="1" variant="strong" class="lg-2 dark:text-white">
+   <flux:heading size="base" level="1" variant="strong" class="lg-2 dark:text-white">
         SIMKOPDES
     </flux:heading>
 @endif
