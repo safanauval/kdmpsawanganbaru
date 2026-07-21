@@ -72,7 +72,7 @@
 
     {{-- PANEL KERANJANG FIXED --}}
     <div class="fixed bottom-0 right-0 h-full w-[340px] bg-white dark:bg-zinc-800 z-50 flex flex-col border-l border-zinc-200 dark:border-zinc-700"
-        style="height: 90%; padding-top: 60px; padding-right: 20px;">
+        style="height: full; padding-top: 10px; padding-right: 20px;">
         <!-- Header Keranjang -->
         <div class="flex justify-between items-center p-4 border-b border-zinc-200 dark:border-zinc-700">
             <h2 class="text-sm flex items-center gap-2" variant="strong">
