@@ -19,16 +19,7 @@
     .auth-white-text .text-zinc-600,
     .auth-white-text .text-zinc-700,
     .auth-white-text .text-zinc-800,
-    .auth-white-text .text-zinc-900,
-    .dark .auth-white-text,
-    .dark .auth-white-text *,
-    .dark .auth-white-text label,
-    .dark .auth-white-text p,
-    .dark .auth-white-text span,
-    .dark .auth-white-text a,
-    .dark .auth-white-text h1,
-    .dark .auth-white-text h2,
-    .dark .auth-white-text h3 {
+    .auth-white-text .text-zinc-900 {
         color: #ffffff !important;
     }
     
