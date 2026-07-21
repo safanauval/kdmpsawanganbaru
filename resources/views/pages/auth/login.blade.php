@@ -25,7 +25,7 @@
             </div>
 
             <!-- Remember Me -->
-            <flux:checkbox name="remember" label="Remember me" :checked="old('remember')" style="color: white;" />
+            <flux:checkbox name="remember" :label="__('Remember me')" :checked="old('remember')" style="accent-color: black;" />
 
             <div class="flex items-center justify-end">
                 <flux:button variant="primary" type="submit" class="w-full" data-test="login-button" color="blue">
