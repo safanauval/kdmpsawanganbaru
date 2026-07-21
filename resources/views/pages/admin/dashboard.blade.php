@@ -72,7 +72,7 @@
                     {{-- Header card --}}
                     <div class="flex rounded-xl justify-between items-center p-1">
                         <div class="m-10 bg-white dark:bg-white-800 dark:text-white rounded shadow"
-                            style="text-color:white; align-items: center;">
+                            style="text-color:white; align-items: center; width: 250px; padding-top: -20px;">
                             {!! $chart->container() !!}
                         </div>
                     </div>
