@@ -1,4 +1,5 @@
-<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })" class="space-y-4">
+<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
+    class="space-y-4">
     <div class="flex justify-between items-center">
         <div>
             <flux:heading size="xl">Gudang</flux:heading>
@@ -7,7 +8,7 @@
     </div>
     {{-- Pencarian --}}
     <div class="space-y-4">
-        <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex flex-col sm:flex-row gap-2">
             <div class="flex-1">
                 <flux:input icon="magnifying-glass" wire:model.live.debounce.100ms="search"
                     placeholder="Cari gudang..." />
@@ -18,7 +19,7 @@
 
     {{-- Tabel Gudang --}}
     <div class="bg-white dark:bg-zinc-800">
-        <div class="overflow-y-auto sm:p-8 p-1">
+        <div class="relative overflow-hidden rounded-xl dark:border-neutral-700 p-1">
             <flux:table container>
                 <flux:table.columns sticky>
                     <flux:table.column>Kode Gudang</flux:table.column>
@@ -40,7 +41,8 @@
                                         wire:navigate>
                                         Edit
                                     </flux:button>
-                                    <flux:button wire:click="delete({{ $g->id }})" wire:confirm="Hapus gudang ini?" size="sm" icon="trash" variant="danger">
+                                    <flux:button wire:click="delete({{ $g->id }})" wire:confirm="Hapus gudang ini?"
+                                        size="sm" icon="trash" variant="danger">
                                         Hapus
                                     </flux:button>
                                 </flux:button.group>

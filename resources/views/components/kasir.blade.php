@@ -1,7 +1,7 @@
 <div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
     x-on:cart-updated.window="$wire.$refresh()" class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1"
     style="padding-top: 20px;">
-    <div class="flex-1" style="padding-right: 280px;">
+    <div class="flex-1" style="padding-right: 330px;">
         <!-- Search & Filter -->
         <div class="flex flex-col sm:flex-row gap-4 p-1 sm:p-1" style="padding-bottom: 20px;">
             <div class="flex-1">
@@ -19,7 +19,7 @@
         </div>
 
         <!-- Grid Produk -->
-        <div class="grid gap-4 p-1 gap-4 pr-[130px]" style="grid-template-columns: auto auto auto auto;">
+        <div class="grid gap-4 p-1 gap-4 p-1" style="grid-template-columns: auto auto auto auto;">
             @foreach($products as $product)
                 <flux:card class="space-y-2" style="cursor: pointer;">
                     <!-- Gambar -->
@@ -71,8 +71,8 @@
     </div>
 
     {{-- PANEL KERANJANG FIXED --}}
-    <div class="fixed top-0 right-0 h-full w-[340px] bg-white dark:bg-zinc-800 z-50 flex flex-col border-l border-zinc-200 dark:border-zinc-700"
-        style="height: 100%; padding-top: 60px; padding-right: 20px;">
+    <div class="fixed bottom-0 right-0 h-full w-[340px] bg-white dark:bg-zinc-800 z-50 flex flex-col border-l border-zinc-200 dark:border-zinc-700"
+        style="height: 90%; padding-top: 60px; padding-right: 20px;">
         <!-- Header Keranjang -->
         <div class="flex justify-between items-center p-4 border-b border-zinc-200 dark:border-zinc-700">
             <h2 class="text-sm flex items-center gap-2" variant="strong">

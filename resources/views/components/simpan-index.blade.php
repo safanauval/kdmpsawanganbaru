@@ -1,7 +1,7 @@
 <div x-data x-on:notify.window="Flux.toast({text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
     class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
     {{-- Header --}}
-    <div class="flex justify-between items-center flex-wrap gap-3">
+    <div class="flex justify-between items-center flex-wrap gap-2">
         <div>
             <flux:heading size="xl">Simpanan Anggota</flux:heading>
             <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">Kelola simpanan pokok & wajib anggota</p>
@@ -55,7 +55,7 @@
                         <flux:table.row wire:key="simpanan-{{ $s->id }}">
                             <flux:table.cell class="font-medium" align="start">
                                 {{ $s->kode_anggota ?? ($s->anggota->kode_anggota ?? '-') }}
-                            </flux:table.cell >
+                            </flux:table.cell>
                             <flux:table.cell class="font-medium" align="start">
                                 {{ $s->nama_anggota ?? ($s->anggota->nama_anggota ?? '-') }}
                             </flux:table.cell>
@@ -107,7 +107,8 @@
     </div>
 
     {{-- Modal Form Simpanan --}}
-    <flux:modal wire:model="showModal" :title="$editMode ? 'Edit Simpanan' : 'Tambah Simpanan'" class="max-w-lg" style="width: 800px;">
+    <flux:modal wire:model="showModal" :title="$editMode ? 'Edit Simpanan' : 'Tambah Simpanan'" class="max-w-lg"
+        style="width: 800px;">
         <div class="space-y-4 p-6">
             {{-- Ringkasan (jika edit mode) --}}
             @if($editMode)
@@ -131,8 +132,8 @@
                         </option>
                     @endforeach
                 </flux:select>
-                @error('id_anggota') 
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p> 
+                @error('id_anggota')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </flux:field>
 
@@ -141,43 +142,45 @@
                 <flux:label>Jenis Simpanan</flux:label>
                 <flux:select wire:model.live="jenis_simpanan" required>
                     <option value="">- Pilih -</option>
-                    
+
                     @php
                         $hasPokok = $id_anggota ? $this->hasPokok($id_anggota) : false;
                     @endphp
-                    
+
                     {{-- Tampilkan opsi pokok hanya jika belum bayar atau sedang edit pokok --}}
                     @if(!$hasPokok || ($editMode && $jenis_simpanan === 'pokok'))
                         <option value="pokok">Pokok (Rp 100.000)</option>
                     @endif
-                    
+
                     <option value="wajib">Wajib</option>
                 </flux:select>
-                
+
                 {{-- Info Status Pokok --}}
                 @if($id_anggota)
                     @if($hasPokok && !($editMode && $jenis_simpanan === 'pokok'))
                         <div class="flex items-center gap-2 mt-2 text-green-600 dark:text-green-400">
                             <flux:icon.check-circle class="w-4 h-4" />
-                            <span class="text-xs">Simpanan pokok sudah lunas. Hanya simpanan wajib yang dapat ditambahkan.</span>
+                            <span class="text-xs">Simpanan pokok sudah lunas. Hanya simpanan wajib yang dapat
+                                ditambahkan.</span>
                         </div>
                     @elseif(!$hasPokok && !$editMode)
                         <div class="flex items-center gap-2 mt-2 text-yellow-600 dark:text-yellow-400">
                             <flux:icon.exclamation-circle class="w-4 h-4" />
-                            <span class="text-xs">Simpanan pokok belum dibayarkan. Silakan pilih "Pokok" untuk pembayaran pertama.</span>
+                            <span class="text-xs">Simpanan pokok belum dibayarkan. Silakan pilih "Pokok" untuk pembayaran
+                                pertama.</span>
                         </div>
                     @endif
                 @endif
-                
-                @error('jenis_simpanan') 
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p> 
+
+                @error('jenis_simpanan')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </flux:field>
 
             {{-- Jumlah (Auto-update) --}}
             <flux:field>
                 <flux:label>Jumlah (Rp)</flux:label>
-                
+
                 @if($jenis_simpanan === 'pokok')
                     <div class="bg-zinc-100 dark:bg-zinc-700 p-3 rounded flex justify-between items-center">
                         <span class="text-zinc-900 dark:text-white font-bold">Rp 100.000</span>
@@ -185,18 +188,12 @@
                     </div>
                     <input type="hidden" wire:model="jumlah" value="100000" />
                 @else
-                    <flux:input 
-                        type="number" 
-                        wire:model="jumlah" 
-                        min="0" 
-                        step="1000" 
-                        required 
-                        placeholder="Masukkan jumlah simpanan"
-                    />
+                    <flux:input type="number" wire:model="jumlah" min="0" step="1000" required
+                        placeholder="Masukkan jumlah simpanan" />
                 @endif
-                
-                @error('jumlah') 
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p> 
+
+                @error('jumlah')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </flux:field>
 
@@ -207,8 +204,8 @@
                     <flux:radio value="tunai" label="Tunai" icon="banknotes"></flux:radio>
                     <flux:radio value="non-tunai" label="QRIS / Transfer" icon="qr-code"></flux:radio>
                 </flux:radio.group>
-                @error('payment_method') 
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p> 
+                @error('payment_method')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </flux:field>
 
@@ -225,8 +222,8 @@
             <flux:field>
                 <flux:label>Tanggal</flux:label>
                 <flux:input type="date" wire:model="tanggal" required />
-                @error('tanggal') 
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p> 
+                @error('tanggal')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </flux:field>
 
@@ -235,7 +232,8 @@
                 <flux:button wire:click="$set('showModal', false)" color="red" variant="danger" style="width: 50%;">
                     Batal
                 </flux:button>
-                <flux:button wire:click="processPayment" color="blue" variant="primary" style="width: 50%;" icon="credit-card">
+                <flux:button wire:click="processPayment" color="blue" variant="primary" style="width: 50%;"
+                    icon="credit-card">
                     Bayar
                 </flux:button>
             </div>
@@ -246,24 +244,24 @@
     <flux:modal wire:model="showQrisModal" title="Pembayaran QRIS" class="max-w-sm">
         <div class="text-center space-y-4 p-6">
             <p class="text-sm">Scan QR code berikut untuk melakukan pembayaran:</p>
-            
+
             {{-- QR Code Image --}}
             @if($qrisUrl)
                 <div class="flex justify-center">
                     <img src="{{ $qrisUrl }}" alt="QRIS" class="w-64 h-64" />
                 </div>
             @endif
-            
+
             <div class="text-sm space-y-1">
                 <p>Order ID: <strong>{{ $qrisOrderId }}</strong></p>
                 <p>Total: <strong>Rp {{ number_format($jumlah ?? 0, 0, ',', '.') }}</strong></p>
             </div>
-            
+
             <div class="flex gap-2 justify-center">
-                <flux:button variant="primary" color="red"  wire:click="closeQrisModal">Tutup</flux:button>
+                <flux:button variant="primary" color="red" wire:click="closeQrisModal">Tutup</flux:button>
                 <flux:button variant="primary" color="blue" wire:click="checkPaymentStatus">Cek Status</flux:button>
             </div>
         </div>
     </flux:modal>
-    
+
 </div>

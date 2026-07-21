@@ -1,6 +1,7 @@
-<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })" class="space-y-4">
+<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
+    class="space-y-4">
     {{-- Header dengan Search dan Tombol Tambah --}}
-    <div class="flex gap-4">
+    <div class="flex gap-2">
         <div class="flex-1">
             <flux:input wire:model.live.debounce.300ms="search" placeholder="Cari nama atau email..."
                 icon="magnifying-glass" clearable />
@@ -11,7 +12,7 @@
     </div>
 
     {{-- Tabel User --}}
-    <div class="relative overflow-y-auto rounded-xl border-neutral-200 dark:border-neutral-700 sm:p-8 p-1">
+    <div class="relative overflow-y-auto rounded-xl border-neutral-200 dark:border-neutral-700 p-1">
         <flux:table>
             <flux:table.columns>
                 <flux:table.column class="w-16">No</flux:table.column>
@@ -46,17 +47,19 @@
                             @if($editingUserId === $user->id)
                                 <div style="padding-left: 15px;">
                                     <flux:button.group>
-                                    <flux:button wire:click="updateRole({{ $user->id }})" size="sm" variant="primary" color="blue">
-                                        Simpan
-                                    </flux:button>
-                                    <flux:button wire:click="cancelEditing" size="sm" variant="danger">
-                                        Batal
-                                    </flux:button>
-                                </flux:button.group>
+                                        <flux:button wire:click="updateRole({{ $user->id }})" size="sm" variant="primary"
+                                            color="blue">
+                                            Simpan
+                                        </flux:button>
+                                        <flux:button wire:click="cancelEditing" size="sm" variant="danger">
+                                            Batal
+                                        </flux:button>
+                                    </flux:button.group>
                                 </div>
                             @else
                                 <div class="flex gap-2 justify-end">
-                                    <flux:button wire:key="edit-{{ $user->id }}" wire:click="startEditing({{ $user->id }})" size="sm" icon="pencil-square">
+                                    <flux:button wire:key="edit-{{ $user->id }}" wire:click="startEditing({{ $user->id }})"
+                                        size="sm" icon="pencil-square">
                                         Ubah Role
                                     </flux:button>
                                 </div>

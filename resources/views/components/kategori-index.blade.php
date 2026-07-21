@@ -1,4 +1,5 @@
-<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })" class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
+<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
+    class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
     <div class="flex justify-between items-center">
         <div>
             <flux:heading size="xl">Kategori</flux:heading>
@@ -7,7 +8,7 @@
     </div>
 
     {{-- Pencarian --}}
-    <div class="flex gap-4">
+    <div class="flex gap-2">
         <div class="flex-1">
             <flux:input wire:model.live.debounce.300ms="search" placeholder="Cari nama kategori..."
                 icon="magnifying-glass" clearable />
@@ -17,7 +18,7 @@
         </flux:button>
     </div>
 
-    <div class="relative justify-between overflow-hidden rounded-xl dark:border-neutral-700 sm:p-8 p-2">
+    <div class="relative justify-between overflow-hidden rounded-xl dark:border-neutral-700 p-1">
         <flux:table>
             <flux:table.columns>
                 <flux:table.column class="w-16">No</flux:table.column>
@@ -28,7 +29,7 @@
             <flux:table.rows>
                 @forelse($kategori as $kat)
                     <flux:table.row>
-                        <flux:table.cell class="text-neutral-500 dark:text-neutral-400" >
+                        <flux:table.cell class="text-neutral-500 dark:text-neutral-400">
                             {{ ($kategori->currentPage() - 1) * $kategori->perPage() + $loop->iteration }}
                         </flux:table.cell>
                         <flux:table.cell variant="strong" class="text-center">
@@ -40,10 +41,11 @@
                                     <flux:button wire:click="openEdit({{ $kat->id }})" color="blue" size="sm"
                                         icon="pencil-square" wire:navigate>
                                         Edit
-                                    </flux:button >
-                                    <flux:button wire:click="delete({{ $kat->id }})" wire:confirm="Hapus kategori ini?" size="sm" icon="trash" variant="danger">
-                                            Hapus
-                                        </flux:button>
+                                    </flux:button>
+                                    <flux:button wire:click="delete({{ $kat->id }})" wire:confirm="Hapus kategori ini?"
+                                        size="sm" icon="trash" variant="danger">
+                                        Hapus
+                                    </flux:button>
                                 </flux:button.group>
                             </div>
                         </flux:table.cell>

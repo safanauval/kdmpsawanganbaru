@@ -1,4 +1,5 @@
-<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })" class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
+<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
+    class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
     {{-- Header --}}
     <div class="flex justify-between items-center flex-wrap gap-3">
         <div>
@@ -13,7 +14,7 @@
     </div>
 
     {{-- Filter & Pencarian --}}
-    <div class="flex flex-col sm:flex-row gap-3">
+    <div class="flex flex-col sm:flex-row gap-2">
         <div class="flex-1">
             <flux:input wire:model.live.debounce.300ms="search" placeholder="Cari nama atau kode anggota..." />
         </div>
@@ -30,7 +31,7 @@
                     <flux:table.column align="center">Telepon</flux:table.column>
                     <flux:table.column align="center">Tanggal Masuk</flux:table.column>
                     <flux:table.column align="center">Total Simpanan</flux:table.column>
-                    <flux:table.column align="center" >Aksi</flux:table.column>
+                    <flux:table.column align="center">Aksi</flux:table.column>
                 </flux:table.columns>
 
                 <flux:table.rows>
