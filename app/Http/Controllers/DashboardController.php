@@ -24,7 +24,13 @@ class DashboardController extends Controller
         $lowStock = StokBarang::where('stok', '<=', 10)->where('stok', '>', 0)->count();
         $outOfStock = StokBarang::where('stok', '=', 0)->count();
         $totalRevenue = Order::where('payment_status', 'paid')->sum('total');
-        $totalExpenses = 0; // Placeholder, bisa dihitung dari pembelian atau biaya lainnya
+        
+        // TOTAL NILAI STOK (Pengeluaran untuk beli semua stok yang ada)
+        // Rumus: SUM(harga_beli × stok) untuk semua barang
+        $totalExpenses = StokBarang::all()->sum(function ($product) {
+            return $product->harga_beli * $product->stok;
+        });
+        
         $inStockProducts = StokBarang::with('kategori')->where('stok', '>', 10)->orderBy('stok')->get();
         $lowStockProducts = StokBarang::with('kategori')->where('stok', '<=', 10)->where('stok', '>', 0)->orderBy('stok')->get();
         $outOfStockProducts = StokBarang::with('kategori')->where('stok', '=', 0)->orderBy('stok')->get();
@@ -32,7 +38,7 @@ class DashboardController extends Controller
         $latestUsers = User::latest()->limit(3)->get();
 
         // 🔧 BUILDER CHART & KIRIM KE VIEW
-        $chart = $chart->build();  // <-- Tambahkan ini
+        $chart = $chart->build();
 
         return view('pages.admin.dashboard', compact(
             'totalTransaction',
@@ -48,13 +54,10 @@ class DashboardController extends Controller
             'outOfStockProducts',
             'latestProducts',
             'latestUsers',
-            'chart'  // <-- Sertakan chart
+            'chart'
         ));
     }
 
-    // Method chart() ini sebenarnya tidak diperlukan lagi, 
-    // karena chart sudah di-handle di index.
-    // Bisa dihapus atau digunakan untuk halaman chart terpisah.
     public function chart(WeeklyBuyersChart $chart)
     {
         return view('pages.dashboard', ['chart' => $chart->build()]);
