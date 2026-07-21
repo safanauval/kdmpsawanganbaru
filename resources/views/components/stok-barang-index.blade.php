@@ -7,7 +7,7 @@
     </div>
 
     {{-- Pencarian --}}
-    <div class="flex flex-col sm:flex-row gap-4">
+    <div class="flex flex-col sm:flex-row gap-2">
         <div class="flex-1">
             <flux:input wire:model.live.debounce.100ms="search" placeholder="Cari kode atau nama barang..."
                 icon="magnifying-glass" clearable />
@@ -18,7 +18,7 @@
     </div>
 
     {{-- Tabel --}}
-    <div class="relative overflow-hidden rounded-xl dark:border-neutral-700 sm:p-8 p-1">
+    <div class="relative overflow-hidden rounded-xl dark:border-neutral-700 p-1">
         <flux:table container:class="max-h-[600px]">
             <flux:table.columns sticky>
                 <flux:table.column>Gambar</flux:table.column>
