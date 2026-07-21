@@ -1,5 +1,5 @@
 <div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
-    class="space-y-4">
+    class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
     {{-- Header dengan Search dan Tombol Tambah --}}
     <div class="flex gap-2">
         <div class="flex-1">
