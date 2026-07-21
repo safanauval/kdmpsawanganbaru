@@ -1,9 +1,8 @@
 <x-layouts::auth.split :title="$title ?? null">
-    <style>
+     <style>
         /* Force white text di semua mode */
         .auth-white-text,
         .auth-white-text *,
-        .auth-white-text label,
         .auth-white-text p,
         .auth-white-text span,
         .auth-white-text a,
@@ -19,22 +18,26 @@
         .auth-white-text .text-zinc-600,
         .auth-white-text .text-zinc-700,
         .auth-white-text .text-zinc-800,
-        .auth-white-text .text-zinc-900,
-        {
-        color: #ffffff !important;
+        .auth-white-text .text-zinc-900 {
+            color: #ffffff !important;
         }
 
         /* Label input tetap putih */
         .auth-white-text label[data-flux-label] {
             color: #ffffff00 !important;
+            font-color: #000000 !important;
         }
 
-        /* Link tetap putih dengan hover */
-        .auth-white-text a:not(.flux-button) {
-            color: #ffffff !important;
+        .dark .auth-white-text label[data-flux-label] {
+            color: #ffffff00 !important;
+            font-color: #000000 !important;
         }
 
         .auth-white-text a:not(.flux-button):hover {
+            color: #bfdbfe !important;
+        }
+
+        .dark .auth-white-text a:not(.flux-button):hover {
             color: #bfdbfe !important;
         }
     </style>
