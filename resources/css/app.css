@@ -61,6 +61,7 @@
 
 [data-flux-field]:not(ui-radio, ui-checkbox) {
     @apply grid gap-2;
+    accent-color: black !important;
 }
 
 [data-flux-label] {
