@@ -7,7 +7,7 @@
         </div>
     </div>
     {{-- Pencarian --}}
-    <div class="space-y-4">
+    <div class="flex gap-2">
         <div class="flex flex-col sm:flex-row gap-2">
             <div class="flex-1">
                 <flux:input icon="magnifying-glass" wire:model.live.debounce.100ms="search"
