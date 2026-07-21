@@ -6,17 +6,13 @@
     <style>
         /* Opsional: efek glassmorphism untuk kartu form */
         .glass-card {
-            background: rgba(0, 0, 0, 0.05);
-            backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.3) backdrop-filter: blur(12px);
             border-radius: 1.5rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .dark .glass-card {
-            background: rgba(0, 0, 0, 0.3);
             border-color: rgba(255, 255, 255, 0.05);
         }
+    </style>
     </style>
 </head>
 
