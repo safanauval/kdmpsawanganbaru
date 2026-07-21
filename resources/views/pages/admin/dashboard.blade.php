@@ -68,9 +68,9 @@
             <!-- Stok Produk & Statistik per minggu -->
             <div class="flex border-neutral-200 dark:border-neutral-700 p-2 gap-4">
                 <!-- Statistik per minggu -->
-                <flux:card class="space-y-4 h-40 dark:text-white" style="width: 66%; height: 330px;" align="start">
+                <flux:card class="space-y-4 h-full dark:text-white" style="width: 66%; height: 330px;" align="start">
                     {{-- Header card --}}
-                    <div class="flex-1 rounded-xl p-2">
+                    <div class="flex-1 rounded-xl p-1">
                         <div class="m-10 bg-white dark:bg-white-800 dark:text-white rounded shadow"
                             style="text-color:white; height: 250px; align-items: center;">
                             {!! $chart->container() !!}
