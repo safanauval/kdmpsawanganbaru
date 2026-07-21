@@ -23,6 +23,21 @@
         {
         color: #ffffff !important;
         }
+
+        /* Label input tetap putih */
+        .auth-white-text label[data-flux-label] {
+            color: #ffffff00 !important;
+            font-color: #ffffff !important;
+        }
+
+        /* Link tetap putih dengan hover */
+        .auth-white-text a:not(.flux-button) {
+            color: #ffffff !important;
+        }
+
+        .auth-white-text a:not(.flux-button):hover {
+            color: #bfdbfe !important;
+        }
     </style>
     {{ $slot }}
 </x-layouts::auth.split>
