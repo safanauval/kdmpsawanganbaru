@@ -46,12 +46,34 @@ class AdminKasir extends Component
 
     private function saveCartToSession()
     {
-        session()->put('cart', $this->cart);
+        // 🔥 Hapus data yang tidak perlu sebelum simpan ke session
+        $cleanCart = array_map(function ($item) {
+            return [
+                'id' => $item['id'],
+                'name' => $item['name'],
+                'price' => $item['price'],
+                'quantity' => $item['quantity'],
+                'image_url' => $item['image_url'] ?? null,
+                'stock' => $item['stock'],
+            ];
+        }, $this->cart);
+
+        session()->put('cart', $cleanCart);
     }
 
     private function loadCartFromSession()
     {
-        $this->cart = session()->get('cart', []);
+        $cart = session()->get('cart', []);
+
+        // 🔥 Validasi ulang stok dari database (jangan percaya session)
+        $this->cart = array_map(function ($item) {
+            $product = StokBarang::find($item['id']);
+            if ($product) {
+                $item['stock'] = $product->stok; // Update stok real-time
+                $item['price'] = $product->harga_jual; // Update harga real-time
+            }
+            return $item;
+        }, $cart);
     }
 
     // ========== COMPUTED PROPERTIES ==========
@@ -110,8 +132,15 @@ class AdminKasir extends Component
     public function addToCart($productId)
     {
         $product = StokBarang::findOrFail($productId);
+
         if ($product->stok <= 0) {
             $this->dispatch('notify', 'Stok habis.', 'error');
+            return;
+        }
+
+        // Batasi jumlah item di keranjang (max 50)
+        if (count($this->cart) >= 50) {
+            $this->dispatch('notify', 'Maksimal 50 item berbeda dalam keranjang.', 'error');
             return;
         }
 
@@ -121,19 +150,40 @@ class AdminKasir extends Component
             return;
         }
 
+        // 🔥 SIMPAN DATA MINIMAL - JANGAN SIMPAN GAMBAR BINARY!
         $this->cart[] = [
             'id' => $product->id,
             'name' => $product->nama_barang,
             'price' => $product->harga_jual,
             'quantity' => 1,
-            'image_url' => $product->gambar_url,
+            'image_url' => $this->getImageUrl($product), // URL saja atau null
             'stock' => $product->stok,
-            'max_qty' => $product->stok,
+            // HAPUS 'max_qty' (redundant dengan 'stock')
         ];
 
         $this->saveCartToSession();
-        $this->calculateDiscount(); // ← Hitung ulang diskon
+        $this->calculateDiscount();
         $this->dispatch('cart-updated');
+    }
+
+    /**
+     * Ambil URL gambar yang aman (bukan binary)
+     */
+    private function getImageUrl($product)
+    {
+        // Jika gambar_url sudah berupa URL http/https
+        if (filter_var($product->gambar_url, FILTER_VALIDATE_URL)) {
+            return $product->gambar_url;
+        }
+
+        // Jika berupa path relatif
+        if ($product->gambar_url && file_exists(public_path($product->gambar_url))) {
+            return asset($product->gambar_url);
+        }
+
+        // Jika binary/base64, JANGAN simpan di cart!
+        // Return placeholder saja
+        return asset('img/placeholder.svg');
     }
 
     public function updateQuantity($productId, $quantity)
