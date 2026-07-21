@@ -66,7 +66,7 @@
             </div>
 
             <!-- Stok Produk & Statistik per minggu -->
-            <div class="flex border-neutral-200 dark:border-neutral-700 p-2 gap-4">
+            <div class="flex border-neutral-200 dark:border-neutral-700 p-2 gap-4 h-[300px]">
                 <!-- Statistik per minggu -->
                 <flux:card class="space-y-4 h-40 dark:text-white" style="width: 66%;" align="start">
                     {{-- Header card --}}
@@ -147,7 +147,7 @@
 
 
             <!-- Pengeluaran dan Pemasukkan -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 p-2 gap-4" style="height: 300px;">
+            <div class="grid grid-cols-1 lg:grid-cols-2 p-2 gap-4">
                 <!-- Card Pemasukkan -->
                 <flux:card class="rounded-xl border hover:bg-zinc-400 dark:hover:bg-zinc-700 ">
                     <div>
