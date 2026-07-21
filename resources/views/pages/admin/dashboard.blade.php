@@ -147,7 +147,7 @@
 
 
             <!-- Pengeluaran dan Pemasukkan -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 p-2 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 p-2 gap-4" style="height: 300px;">
                 <!-- Card Pemasukkan -->
                 <flux:card class="rounded-xl border hover:bg-zinc-400 dark:hover:bg-zinc-700 ">
                     <div>
