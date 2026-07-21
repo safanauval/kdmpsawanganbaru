@@ -76,10 +76,8 @@
                             {!! $chart->container() !!}
                         </div>
                     </div>
-                    @push('scripts')
-                        <script src="{{ $chart->cdn() }}"></script>
-                        {{ $chart->script() }}
-                    @endpush
+                    <script src="{{ $chart->cdn() }}"></script>
+                    {{ $chart->script() }}
                 </flux:card>
 
                 <!-- Stok Produk -->
