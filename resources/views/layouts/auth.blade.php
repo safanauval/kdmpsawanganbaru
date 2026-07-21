@@ -27,7 +27,6 @@
         /* Label input tetap putih */
         .auth-white-text label[data-flux-label] {
             color: #ffffff00 !important;
-            font-color: #ffffff !important;
         }
 
         /* Link tetap putih dengan hover */
