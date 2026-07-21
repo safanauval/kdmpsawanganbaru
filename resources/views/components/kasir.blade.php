@@ -1,6 +1,7 @@
 <div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
-    class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1" style="padding-top: 20px;">
-    <div class="flex-1" style="padding-right: 330px;">
+    x-on:cart-updated.window="$wire.$refresh()" class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1"
+    style="padding-top: 20px;">
+    <div class="flex-1" style="padding-right: 280px;">
         <!-- Search & Filter -->
         <div class="flex flex-col sm:flex-row gap-4 p-1 sm:p-1" style="padding-bottom: 20px;">
             <div class="flex-1">
@@ -18,15 +19,15 @@
         </div>
 
         <!-- Grid Produk -->
-        <div
-            class="grid gap-4 p-1 sm:p-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pr-[330px]">
+        <div class="grid gap-4 p-1 gap-4 pr-[130px]" style="grid-template-columns: auto auto auto auto;">
             @foreach($products as $product)
-                <flux:card class="space-y-2" wire:click="addToCart({{ $product->id }})" style="cursor: pointer;">
+                <flux:card class="space-y-2" style="cursor: pointer;">
                     <!-- Gambar -->
-                    <div class="flex items-center justify-center w-full h-32 rounded-lg bg-zinc-100 dark:bg-zinc-700">
+                    <div wire:click="addToCart({{ $product->id }})"
+                        class="flex items-center justify-center w-full h-32 rounded-lg bg-white dark:bg-zinc-700">
                         @if($product->gambar_url)
                             <img src="{{ $product->gambar_url }}" alt="{{ $product->nama_barang }}" class="rounded-lg"
-                                style="width: 140px; height: 140px;  object-fit: cover; " />
+                                style="width: 140px; height: 140px; object-fit: cover;" />
                         @else
                             <flux:icon.photo style="width: 140px; height: 140px; object-fit: cover;"></flux:icon.photo>
                         @endif
@@ -71,7 +72,7 @@
 
     {{-- PANEL KERANJANG FIXED --}}
     <div class="fixed top-0 right-0 h-full w-[340px] bg-white dark:bg-zinc-800 z-50 flex flex-col border-l border-zinc-200 dark:border-zinc-700"
-        style="height: full; padding-top: 60px; padding-right: 20px;">
+        style="height: 100%; padding-top: 60px; padding-right: 20px;">
         <!-- Header Keranjang -->
         <div class="flex justify-between items-center p-4 border-b border-zinc-200 dark:border-zinc-700">
             <h2 class="text-sm flex items-center gap-2" variant="strong">
@@ -122,24 +123,33 @@
         </div>
 
         {{-- Total & Bayar SELALU TAMPIL --}}
-        <div class="border-t p-4 space-y-2" style="width: 320px;;">
-            {{-- Hitung total qty --}}
+        <div class="border-t p-4 space-y-2" style="width: 320px;">
             @php
                 $totalQty = collect($cart)->sum('quantity');
+
+                // Hitung diskon real-time di view
+                $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+                $discPercent = $id_anggota ? $memberDiscountPercent : $nonMemberDiscountPercent;
+                $discAmount = $subtotal * $discPercent / 100;
+                $totalAfterDisc = max(0, $subtotal - $discAmount);
             @endphp
+
             <div class="flex justify-between text-sm font-bold">
                 <span>Total QTY</span>
                 <span>{{ $totalQty }}</span>
             </div>
-            <div class="flex justify-between text-sm font-bold">
+
+            <div class="flex justify-between text-sm font-bold text-black-600">
                 <span>Diskon</span>
-                <span>-Rp {{ number_format($discountAmount, 0, ',', '.') }}</span>
+                <span>-Rp {{ number_format($discAmount, 0, ',', '.') }}</span>
             </div>
+
             <div class="flex justify-between text-base">
-                <span class="text-base" variant="strong">Total</span>
-                <span variant="strong" class="text-base font-bold text-green-600">Rp
-                    {{ number_format($this->total, 0, ',', '.') }}</span>
+                <span class="text-base font-bold">Total</span>
+                <span class="text-base font-bold text-green-600">Rp
+                    {{ number_format($totalAfterDisc, 0, ',', '.') }}</span>
             </div>
+
             <flux:button wire:click="openPaymentModal" color="blue" variant="primary" class="w-full" icon="credit-card"
                 :disabled="count($cart) === 0">
                 Bayar Sekarang
@@ -194,6 +204,12 @@
                 <flux:field>
                     <flux:label>Jumlah Bayar</flux:label>
                     <flux:input type="number" wire:model.live="paymentAmount" min="0" />
+                    {{-- Pesan uang kurang --}}
+                    @if($paymentMethod === 'tunai' && is_numeric($paymentAmount) && $paymentAmount > 0 && $paymentAmount < $this->total)
+                        <p class="text-sm text-red-500 mt-1">
+                            ⚠️ Uang kurang Rp {{ number_format($this->total - $paymentAmount, 0, ',', '.') }}
+                        </p>
+                    @endif
                 </flux:field>
                 <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded flex justify-between">
                     <span>Kembalian</span>
@@ -216,40 +232,6 @@
             </div>
         </div>
     </flux:modal>
-    <!-- Javascript midtrans -->
-    <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('open-snap', (event) => {
-                const snapToken = event.snapToken;
-
-                if (!snapToken) {
-                    alert('Gagal mendapatkan token pembayaran.');
-                    return;
-                }
-
-                // Pastikan Snap.js sudah dimuat (baik objek snap maupun fungsi pay)
-                if (typeof window.snap !== 'undefined' && typeof window.snap.pay === 'function') {
-                    window.snap.pay(snapToken, {
-                        onSuccess: function (result) {
-                            @this.call('handlePaymentSuccess', result);
-                        },
-                        onPending: function (result) {
-                            @this.call('handlePaymentPending', result);
-                        },
-                        onError: function (result) {
-                            @this.call('handlePaymentError', result);
-                        },
-                        onClose: function () {
-                            @this.call('handlePaymentClose');
-                        }
-                    });
-                } else {
-                    alert('Midtrans Snap belum dimuat. Silakan muat ulang halaman atau periksa koneksi internet.');
-                }
-            });
-        });
-    </script>
-
 
     <!-- Modal Struk Pembayaran -->
     <flux:modal wire:model="showReceiptModal" title="Struk Pembayaran" class="max-w-sm" id="receipt-modal">
@@ -258,7 +240,8 @@
                 {{-- Header Toko --}}
                 <div class="text-center border-b pb-2 mb-2">
                     <h2 class="font-bold text-lg">
-                        {{ \App\Helpers\SettingHelper::get('company_name', 'Koperasi Merah Putih') }}</h2>
+                        {{ \App\Helpers\SettingHelper::get('company_name', 'Koperasi Merah Putih') }}
+                    </h2>
                     <p>{{ \App\Helpers\SettingHelper::get('address', 'Alamat belum diatur') }}</p>
                     <p>Telp: {{ \App\Helpers\SettingHelper::get('phone', 'Telepon belum diatur') }}</p>
                     <p>{{ now()->format('d/m/Y H:i:s') }}</p>
@@ -268,7 +251,8 @@
                 <div class="mb-2">
                     <p><strong>No. Order:</strong> {{ $lastOrder->order_id }}</p>
                     <p><strong>Kasir:</strong> {{ auth()->user()->name ?? 'Admin' }}</p>
-                    <p><strong>Pelanggan:</strong> {{ $lastOrder->customer_name ?: 'Umum' }}</p>
+                    <p><strong>Pelanggan:</strong> {{ $lastOrder->nama_pelanggan ?? $lastOrder->customer_name ?: 'Umum' }}
+                    </p>
                     <p><strong>Metode:</strong> {{ ucfirst($lastOrder->payment_method) }}</p>
                 </div>
 
@@ -294,10 +278,30 @@
                         @endforeach
                     </tbody>
                     <tfoot class="border-t">
+                        {{-- Subtotal --}}
+                        @php
+                            $subtotal = collect($lastOrder->cart_items)->sum(fn($item) => $item['price'] * $item['quantity']);
+                        @endphp
+                        <tr>
+                            <td colspan="3" class="text-right py-1">Subtotal:</td>
+                            <td class="text-right">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
+                        </tr>
+
+                        {{-- Diskon --}}
+                        @if($lastOrder->discount_amount > 0)
+                            <tr class="text-green-600">
+                                <td colspan="3" class="text-right py-1">Diskon:</td>
+                                <td class="text-right">-Rp {{ number_format($lastOrder->discount_amount, 0, ',', '.') }}</td>
+                            </tr>
+                        @endif
+
+                        {{-- Total --}}
                         <tr>
                             <th colspan="3" class="text-right py-1">Total:</th>
                             <th class="text-right">Rp {{ number_format($lastOrder->total, 0, ',', '.') }}</th>
                         </tr>
+
+                        {{-- Pembayaran Tunai --}}
                         @if($lastOrder->payment_method === 'tunai' && $lastOrder->payment_amount)
                             <tr>
                                 <td colspan="3" class="text-right py-1">Bayar:</td>
@@ -307,7 +311,6 @@
                                 <td colspan="3" class="text-right py-1">Kembali:</td>
                                 <td class="text-right">Rp
                                     {{ number_format($lastOrder->payment_amount - $lastOrder->total, 0, ',', '.') }}
-
                                 </td>
                             </tr>
                         @endif
@@ -315,99 +318,47 @@
                 </table>
 
                 <div class="text-center text-xs text-gray-500 mt-4">
-                    {{ \App\Helpers\SettingHelper::get('footer_text', 'Alamat belum diatur') }}<br>
+                    {{ \App\Helpers\SettingHelper::get('footer_text', 'Terima kasih atas kunjungan Anda') }}<br>
                     *** Simpan struk sebagai bukti ***
                 </div>
             </div>
 
-            <div class="flex gap-2 justify-end mt-4">
+            <div class="flex gap-2 justify-end mt-4 no-print">
                 <flux:button wire:click="closeReceiptModal" variant="ghost">Tutup</flux:button>
-                <flux:button wire:click="printReceipt" variant="primary">Cetak Struk</flux:button>
+                <flux:button x-on:click="window.open('{{ route('struk.pdf', $lastOrder->order_id) }}', '_blank')"
+                    variant="primary" icon="printer">
+                    Cetak Struk
+                </flux:button>
             </div>
         @endif
     </flux:modal>
     @push('scripts')
-    <!-- Payment -->
-
-    <script src="{{ config('services.midtrans.is_production') 
-            ? 'https://app.midtrans.com/snap/snap.js' 
-            : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" 
+        {{-- Midtrans Snap --}}
+        <script
+            src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
             data-client-key="{{ config('services.midtrans.client_key') }}">
-        </script>
+            </script>
 
+        {{-- Midtrans Handler --}}
         <script>
             document.addEventListener('livewire:init', () => {
                 Livewire.on('open-snap', (event) => {
                     const snapToken = event.snapToken;
-                    
                     if (!snapToken) {
                         alert('Gagal mendapatkan token pembayaran.');
                         return;
                     }
-
-                    window.snap.pay(snapToken, {
-                        onSuccess: function(result) {
-                            @this.call('handlePaymentSuccess', result);
-                        },
-                        onPending: function(result) {
-                            @this.call('handlePaymentPending', result);
-                        },
-                        onError: function(result) {
-                            @this.call('handlePaymentError', result);
-                        },
-                        onClose: function() {
-                            @this.call('handlePaymentClose');
-                        }
-                    });
-                });
-            });
-        </script>
-        <script>
-            document.addEventListener('livewire:init', function () {
-                Livewire.on('print-receipt', () => {
-                    const printContent = document.getElementById('receipt-content').cloneNode(true);
-                    const originalTitle = document.title;
-                    document.title = 'Struk Pembayaran';
-                    const printWindow = window.open('', '_blank');
-                    printWindow.document.write(`                                                                                                                                                                          <!DOCTYPE html>
-                    <html>
-                    <head>
-                    <title>Struk Pembayaran</title>
-                    <style>
-                    body { 
-                            font-family: 'Courier New', Courier, monospace;
-                            padding: 20px;
-                            max-width: 300px;
-                            margin: auto;
-                        }
-                    table {
-                            width: 100%;
-                            border-collapse: collapse;
-                        }
-                    th, td {
-                            padding: 5px 0;
-                        }
-                    .text-right {
-                                text-align: right;
-                            }
-                    .border-t {
-                               border-top: 1px dashed #000;
-                            }
-                    .border-b {
-                                border-bottom: 1px dashed #000;
-                            }
-                    </style>
-                    </head>
-                    <body>
-                    ${printContent.outerHTML}
-                    </body>
-                    </html>`);
-                    printWindow.document.close();
-                    printWindow.print();
-                    printWindow.onafterprint = () => printWindow.close();
-                    document.title = originalTitle;
+                    if (typeof window.snap !== 'undefined' && typeof window.snap.pay === 'function') {
+                        window.snap.pay(snapToken, {
+                            onSuccess: function (result) { @this.call('handlePaymentSuccess', result); },
+                            onPending: function (result) { @this.call('handlePaymentPending', result); },
+                            onError: function (result) { @this.call('handlePaymentError', result); },
+                            onClose: function () { @this.call('handlePaymentClose'); }
+                        });
+                    } else {
+                        alert('Midtrans Snap belum dimuat.');
+                    }
                 });
             });
         </script>
     @endpush
-</div>

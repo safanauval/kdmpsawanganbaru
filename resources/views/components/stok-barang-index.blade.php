@@ -105,6 +105,10 @@
     <flux:modal wire:model="showModal" :title="$editMode ? 'Edit Stok Barang' : 'Tambah Stok Barang'" class="max-w-2xl" style="width: 900px;">
         <div class="space-y-4 p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <flux:field class="md:col-span-2">
+                    <flux:label>Gambar</flux:label>
+                    <flux:input type="file" wire:model="gambar" accept="image/*" />
+                </flux:field>
                 <flux:field>
                     <flux:label>Kode Barang</flux:label>
                     <flux:input wire:model="kode_barang" required />
@@ -176,10 +180,6 @@
                 <flux:field class="md:col-span-2">
                     <flux:label>Deskripsi</flux:label>
                     <flux:textarea wire:model="deskripsi" rows="2" />
-                </flux:field>
-                <flux:field class="md:col-span-2">
-                    <flux:label>Gambar</flux:label>
-                    <flux:input type="file" wire:model="gambar" accept="image/*" />
                 </flux:field>
             </div>
 

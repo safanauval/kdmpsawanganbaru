@@ -8,6 +8,8 @@ use App\Models\StokBarang;
 use App\Models\Anggota;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Response;
 
 class AdminKasir extends Component
 {
@@ -37,25 +39,16 @@ class AdminKasir extends Component
 
     public function mount()
     {
-        // Muat diskon dari setting
         $this->memberDiscountPercent = (float) Setting::getValue('member_discount', 0);
         $this->nonMemberDiscountPercent = (float) Setting::getValue('non_member_discount', 0);
-
-        // Muat keranjang dari session
         $this->loadCartFromSession();
     }
 
-    /**
-     * Simpan keranjang ke session
-     */
     private function saveCartToSession()
     {
         session()->put('cart', $this->cart);
     }
 
-    /**
-     * Muat keranjang dari session
-     */
     private function loadCartFromSession()
     {
         $this->cart = session()->get('cart', []);
@@ -88,13 +81,37 @@ class AdminKasir extends Component
         return Anggota::orderBy('nama_anggota')->get();
     }
 
-    // ========== KERANJANG & DISKON ==========
+    // ========== DISKON (REAL-TIME) ==========
+
+    public function calculateDiscount()
+    {
+        if (empty($this->cart)) {
+            $this->discountAmount = 0;
+            return;
+        }
+
+        $subtotal = collect($this->cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        $discountPercent = $this->id_anggota ? $this->memberDiscountPercent : $this->nonMemberDiscountPercent;
+        $this->discountAmount = $subtotal * $discountPercent / 100;
+    }
+
+    /**
+     * Total akhir = subtotal - diskon
+     */
+    public function getTotalProperty()
+    {
+        $this->calculateDiscount(); // ← Hitung ulang setiap kali diakses
+        $subtotal = collect($this->cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        return max(0, $subtotal - $this->discountAmount);
+    }
+
+    // ========== KERANJANG ==========
 
     public function addToCart($productId)
     {
         $product = StokBarang::findOrFail($productId);
         if ($product->stok <= 0) {
-            session()->flash('error', 'Stok habis.');
+            $this->dispatch('notify', 'Stok habis.', 'error');
             return;
         }
 
@@ -115,6 +132,8 @@ class AdminKasir extends Component
         ];
 
         $this->saveCartToSession();
+        $this->calculateDiscount(); // ← Hitung ulang diskon
+        $this->dispatch('cart-updated');
     }
 
     public function updateQuantity($productId, $quantity)
@@ -128,7 +147,7 @@ class AdminKasir extends Component
             if ($item['id'] == $productId) {
                 $product = StokBarang::find($productId);
                 if ($product && $quantity > $product->stok) {
-                    session()->flash('error', 'Stok tidak mencukupi.');
+                    $this->dispatch('notify', 'Stok tidak mencukupi.', 'error');
                     return $item;
                 }
                 $item['quantity'] = $quantity;
@@ -137,12 +156,15 @@ class AdminKasir extends Component
         })->toArray();
 
         $this->saveCartToSession();
+        $this->calculateDiscount(); // ← Jika ada
+        $this->dispatch('cart-updated');
     }
-
     public function removeFromCart($productId)
     {
         $this->cart = collect($this->cart)->reject(fn($item) => $item['id'] == $productId)->toArray();
         $this->saveCartToSession();
+        $this->calculateDiscount(); // ← Hitung ulang diskon
+        $this->dispatch('cart-updated');
     }
 
     public function clearCart()
@@ -151,24 +173,6 @@ class AdminKasir extends Component
         $this->discountAmount = 0;
         session()->forget('cart');
         $this->dispatch('cart-updated', cartCount: 0);
-    }
-
-    /**
-     * Total akhir = subtotal - diskon (persentase)
-     */
-    public function getTotalProperty()
-    {
-        $subtotal = collect($this->cart)->sum(fn($item) => $item['price'] * $item['quantity']);
-
-        $discountPercent = 0;
-        if ($this->id_anggota) {
-            $discountPercent = $this->memberDiscountPercent;
-        } else {
-            $discountPercent = $this->nonMemberDiscountPercent;
-        }
-
-        $this->discountAmount = $subtotal * $discountPercent / 100;
-        return max(0, $subtotal - $this->discountAmount);
     }
 
     // ========== MODAL PEMBAYARAN ==========
@@ -199,8 +203,8 @@ class AdminKasir extends Component
     {
         $this->validate([
             'paymentMethod' => 'required|in:tunai,non-tunai',
-            'customerName'  => 'nullable|string|max:100',
-            'id_anggota'    => 'nullable|exists:anggota,id_anggota',
+            'customerName' => 'nullable|string|max:100',
+            'id_anggota' => 'nullable|exists:anggota,id_anggota',
         ]);
 
         // ========== PEMBAYARAN TUNAI ==========
@@ -210,18 +214,18 @@ class AdminKasir extends Component
             $order = null;
             DB::transaction(function () use (&$order) {
                 $order = Order::create([
-                    'order_id'        => 'KPDES-CASH-' . time(),
-                    'user_id'         => auth()->id(),
-                    'user_name'       => auth()->user()->name ?? null,
-                    'id_anggota'      => $this->id_anggota,
-                    'nama_anggota'    => $this->nama_anggota,
-                    'customer_name'   => $this->customerName,
-                    'total'           => $this->total,
+                    'order_id' => 'KPDES-CASH-' . time(),
+                    'user_id' => auth()->id(),
+                    'user_name' => auth()->user()->name ?? null,
+                    'id_anggota' => $this->id_anggota,
+                    'nama_anggota' => $this->nama_anggota,
+                    'customer_name' => $this->customerName,
+                    'total' => $this->total,
                     'discount_amount' => $this->discountAmount,
-                    'payment_method'  => 'tunai',
-                    'payment_status'  => 'paid',
-                    'payment_amount'  => $this->paymentAmount,
-                    'cart_items'      => $this->cart,
+                    'payment_method' => 'tunai',
+                    'payment_status' => 'paid',
+                    'payment_amount' => $this->paymentAmount,
+                    'cart_items' => $this->cart,
                 ]);
 
                 $this->reduceStock($this->cart);
@@ -241,7 +245,7 @@ class AdminKasir extends Component
             $grossAmount = (int) $this->total;
 
             $transactionDetails = [
-                'order_id'     => $orderId,
+                'order_id' => $orderId,
                 'gross_amount' => $grossAmount,
             ];
 
@@ -253,43 +257,43 @@ class AdminKasir extends Component
             $itemDetails = [];
             foreach ($this->cart as $item) {
                 $itemDetails[] = [
-                    'id'       => (string) $item['id'],
-                    'price'    => (int) round($item['price']),
+                    'id' => (string) $item['id'],
+                    'price' => (int) round($item['price']),
                     'quantity' => (int) $item['quantity'],
-                    'name'     => substr($item['name'], 0, 50),
+                    'name' => substr($item['name'], 0, 50),
                 ];
             }
 
             // Konfigurasi Midtrans (SUDAH TERBUKTI BERFUNGSI)
-            \Midtrans\Config::$serverKey    = config('services.midtrans.server_key');
-            \Midtrans\Config::$clientKey    = config('services.midtrans.client_key');
+            \Midtrans\Config::$serverKey = config('services.midtrans.server_key');
+            \Midtrans\Config::$clientKey = config('services.midtrans.client_key');
             \Midtrans\Config::$isProduction = config('services.midtrans.is_production');
-            \Midtrans\Config::$isSanitized  = config('services.midtrans.is_sanitized');
-            \Midtrans\Config::$is3ds        = config('services.midtrans.is_3ds');
+            \Midtrans\Config::$isSanitized = config('services.midtrans.is_sanitized');
+            \Midtrans\Config::$is3ds = config('services.midtrans.is_3ds');
 
             $params = [
                 'transaction_details' => $transactionDetails,
-                'customer_details'    => $customerDetails,
-                'item_details'        => $itemDetails,
+                'customer_details' => $customerDetails,
+                'item_details' => $itemDetails,
             ];
 
             $snapToken = \Midtrans\Snap::getSnapToken($params);
 
             // Simpan order
             Order::create([
-                'order_id'        => $orderId,
-                'user_id'         => auth()->id(),
-                'user_name'       => auth()->user()->name ?? null,
-                'id_anggota'      => $this->id_anggota,
-                'nama_anggota'    => $this->nama_anggota,
-                'customer_name'   => $this->customerName,
-                'total'           => $this->total,
+                'order_id' => $orderId,
+                'user_id' => auth()->id(),
+                'user_name' => auth()->user()->name ?? null,
+                'id_anggota' => $this->id_anggota,
+                'nama_anggota' => $this->nama_anggota,
+                'customer_name' => $this->customerName,
+                'total' => $this->total,
                 'discount_amount' => $this->discountAmount,
-                'payment_method'  => $this->paymentMethod,
-                'payment_status'  => 'pending',
-                'payment_amount'  => $this->total,
-                'snap_token'      => $snapToken,
-                'cart_items'      => $this->cart,
+                'payment_method' => $this->paymentMethod,
+                'payment_status' => 'pending',
+                'payment_amount' => $this->total,
+                'snap_token' => $snapToken,
+                'cart_items' => $this->cart,
             ]);
 
             // Buka popup Midtrans
@@ -336,14 +340,36 @@ class AdminKasir extends Component
 
     // ========== LAIN-LAIN ==========
 
-    public function printReceipt()
+    public function printReceipt($orderId)
     {
-            if (!$this->lastOrder) {
-            $this->dispatch('notify', 'Tidak ada struk untuk dicetak.', 'error');
-            return;
-        }
-    // Dispatch event dengan sedikit delay untuk memastikan DOM siap
-    $this->dispatch('print-receipt');
+        // Cari order
+        $order = Order::where('order_id', $orderId)->firstOrFail();
+
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.struk', compact('order'));
+
+        // Set ukuran kertas struk (58mm x 80mm)
+        $pdf->setPaper([0, 0, 164.41, 226.77], 'portrait');
+
+        // Set options
+        $pdf->setOptions([
+            'defaultFont' => 'Courier New',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'dpi' => 150,
+        ]);
+
+        // Stream PDF ke browser (tampil dan bisa di-download)
+        return Response::stream(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="struk-' . $orderId . '.pdf"',
+            ]
+        );
     }
 
     public function closeReceiptModal()
@@ -366,18 +392,19 @@ class AdminKasir extends Component
     {
         $value = trim($value);
         if (empty($value)) {
-            $this->reset(['id_anggota', 'nama_anggota']);
+            $this->id_anggota = null;
+            $this->calculateDiscount(); // ← Update diskon saat anggota berubah
             return;
         }
 
         $anggota = Anggota::where('kode_anggota', $value)->first();
         if ($anggota) {
             $this->id_anggota = $anggota->id_anggota;
-            $this->nama_anggota = $anggota->nama_anggota;
             $this->customerName = $anggota->nama_anggota;
         } else {
-            $this->reset(['id_anggota', 'nama_anggota']);
+            $this->id_anggota = null;
         }
+        $this->calculateDiscount(); // ← Update diskon saat anggota berubah
     }
 
     public function render()

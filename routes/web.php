@@ -5,7 +5,7 @@ use App\Http\Controllers\{
     DashboardController,
     GudangController,
     KategoriController,
-    MidtransCallbackController, 
+    MidtransCallbackController,
     PinjamanController,
     ProfileController,
     RiwayatTransaksiController,
@@ -14,6 +14,7 @@ use App\Http\Controllers\{
     SimpananController,
     StokBarangController,
     StokBarangKsrController,
+    StrukController,
     UserController,
 };
 use Illuminate\Support\Facades\Route;
@@ -59,6 +60,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Admin Kasir (jika diperlukan)
         Route::get('kasir', fn() => view('pages.admin.kasir.index'))->name('adminKasir');
+
+        // struk
+        Route::get('/struk/{orderId}/pdf', [StrukController::class, 'pdf'])->name('struk.pdf');
     });
 
     // ========== RUTE KASIR ==========
@@ -72,6 +76,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Riwayat Transaksi
         Route::get('riwayat-transaksi', [RiwayatTransaksiKsrController::class, 'index'])->name('riwayat-transaksi.kasir.index');
         Route::get('riwayat-transaksi/cetak', [RiwayatTransaksiKsrController::class, 'cetak'])->name('riwayat-transaksi.kasir.cetak');
+
+        // struk
+        Route::get('/struk/{orderId}/pdf', [StrukController::class, 'pdf'])->name('struk.pdf');
     });
 
     // Rute umum

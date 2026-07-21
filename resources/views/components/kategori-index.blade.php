@@ -41,14 +41,9 @@
                                         icon="pencil-square" wire:navigate>
                                         Edit
                                     </flux:button >
-                                    <form action="{{ route('kategori.destroy', $kat) }}" method="POST"
-                                        onsubmit="return confirm('Yakin hapus kategori ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <flux:button type="submit" size="sm" icon="trash" variant="danger">
+                                    <flux:button wire:click="delete({{ $kat->id }})" wire:confirm="Hapus kategori ini?" size="sm" icon="trash" variant="danger">
                                             Hapus
                                         </flux:button>
-                                    </form>
                                 </flux:button.group>
                             </div>
                         </flux:table.cell>

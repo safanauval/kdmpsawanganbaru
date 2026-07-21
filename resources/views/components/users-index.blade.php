@@ -44,20 +44,22 @@
                         </flux:table.cell>
                         <flux:table.cell align="end" class="py-2">
                             @if($editingUserId === $user->id)
-                                <flux:button.group>
-                                    <flux:button wire:click="updateRole({{ $user->id }})" size="sm" variant="primary"
-                                        color="blue">
+                                <div style="padding-left: 15px;">
+                                    <flux:button.group>
+                                    <flux:button wire:click="updateRole({{ $user->id }})" size="sm" variant="primary" color="blue">
                                         Simpan
                                     </flux:button>
                                     <flux:button wire:click="cancelEditing" size="sm" variant="danger">
                                         Batal
                                     </flux:button>
                                 </flux:button.group>
+                                </div>
                             @else
-                                <flux:button wire:click="startEditing({{ $user->id }}, '{{ $user->role }}')" size="sm"
-                                    icon="pencil-square">
-                                    Ubah Role
-                                </flux:button>
+                                <div class="flex gap-2 justify-end">
+                                    <flux:button wire:key="edit-{{ $user->id }}" wire:click="startEditing({{ $user->id }})" size="sm" icon="pencil-square">
+                                        Ubah Role
+                                    </flux:button>
+                                </div>
                             @endif
                         </flux:table.cell>
                     </flux:table.row>
@@ -82,7 +84,7 @@
         @endif
     </div>
 
-    {{-- Modal Tambah Anggota --}}
+    {{-- ========== MODAL TAMBAH ANGGOTA ========== --}}
     <flux:modal wire:model="showCreateModal" title="Tambah Anggota Baru">
         <form wire:submit="createUser" class="space-y-6">
             <flux:field>

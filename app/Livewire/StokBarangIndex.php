@@ -107,7 +107,7 @@ class StokBarangIndex extends Component
 
     public function delete($id)
     {
-        StokBarang::destroy($id);
+        StokBarang::delete($id);
         $this->dispatch('notify', 'Stok barang berhasil dihapus.', 'success');
     }
 

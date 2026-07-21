@@ -20,7 +20,7 @@ class GudangIndex extends Component
         return [
             'kode_gudang' => 'required|unique:gudang,kode_gudang' . ($this->editMode ? ',' . $this->gudangId : ''),
             'nama_gudang' => 'required|string|max:50',
-            'alamat' => 'nullable|string|maax:150',
+            'alamat' => 'nullable|string|max:150',
             'telepon' => 'nullable|string|max:15',
         ];
     }
@@ -62,10 +62,10 @@ class GudangIndex extends Component
 
         if ($this->editMode) {
             Gudang::where('id', $this->gudangId)->update($data);
-            session()->flash('success', 'gudang diperbarui.');
+            $this->dispatch('notify', 'Gudang berhasil diperbaharui.', 'success');
         } else {
             Gudang::create($data);
-            session()->flash('success', 'gudang ditambahkan.');
+            $this->dispatch('notify', 'Gudang berhasil ditambahkan.', 'success');
         }
 
         $this->showModal = false;
@@ -74,8 +74,8 @@ class GudangIndex extends Component
 
     public function delete($id)
     {
-        Gudang::destroy($id);
-        session()->flash('success', 'gudang dihapus.');
+        Gudang::findOrFail($id)->delete();
+        $this->dispatch('notify', 'Gudang berhasil dihapus.', 'success');
     }
 
     private function resetInput()

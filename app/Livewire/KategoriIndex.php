@@ -46,7 +46,7 @@ class KategoriIndex extends Component
         Kategori::create(['nama' => $this->namaBaru]);
 
         $this->reset(['showCreateModal', 'namaBaru']);
-        session()->flash('success', 'Kategori berhasil ditambahkan.');
+        $this->dispatch('notify', 'Kategori berhasil ditambahkan.', 'success');
     }
 
     // Edit methods
@@ -68,7 +68,7 @@ class KategoriIndex extends Component
         $ktgori->update(['nama' => $this->nama]);
 
         $this->reset(['showEditModal', 'selectedKategoriId', 'nama']);
-        session()->flash('success', 'Kategori berhasil diperbarui.');
+        $this->dispatch('notify', 'Kategori berhasil diperbarui.', 'success');
     }
 
     public function cancelEdit()
@@ -79,6 +79,12 @@ class KategoriIndex extends Component
     public function cancelCreate()
     {
         $this->reset(['showCreateModal', 'namaBaru']);
+    }
+
+     public function delete($id)
+    {
+        Kategori::findOrFail($id)->delete();
+        $this->dispatch('notify', 'Kategori berhasil dihapus.', 'success');
     }
 
     public function render()

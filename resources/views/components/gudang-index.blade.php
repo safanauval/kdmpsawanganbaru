@@ -40,14 +40,9 @@
                                         wire:navigate>
                                         Edit
                                     </flux:button>
-                                    <form action="delete({{ $g->id }})" method="POST"
-                                        onsubmit="return confirm('Yakin hapus data gudang ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <flux:button type="submit" size="sm" icon="trash" variant="danger">
-                                            Hapus
-                                        </flux:button>
-                                    </form>
+                                    <flux:button wire:click="delete({{ $g->id }})" wire:confirm="Hapus gudang ini?" size="sm" icon="trash" variant="danger">
+                                        Hapus
+                                    </flux:button>
                                 </flux:button.group>
                             </div>
                         </flux:table.cell>
@@ -76,11 +71,6 @@
                 <flux:label>Nama gudang</flux:label>
                 <flux:input wire:model="nama_gudang" required />
                 @error('nama_gudang') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-            </flux:field>
-            <flux:field>
-                <flux:label>Alamat</flux:label>
-                <flux:textarea wire:model="alamat" rows="2" />
-                @error('alamat') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </flux:field>
             <div class="grid grid-cols-2 gap-4">
                 <flux:field>

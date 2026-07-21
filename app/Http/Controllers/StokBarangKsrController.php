@@ -91,7 +91,7 @@ class StokBarangKsrController extends Controller
             ->with('success', 'Stok barang berhasil diperbarui.');
     }
 
-    public function destroy(StokBarang $stokBarang)
+    public function delete(StokBarang $stokBarang)
     {
         // Karena gambar disimpan di database, tidak perlu menghapus file fisik
         $stokBarang->delete();

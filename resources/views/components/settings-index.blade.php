@@ -72,7 +72,7 @@
                         </flux:field>
                     </div>
                     <div class="flex justify-end">
-                        <flux:button type="submit" variant="primary" color="blue">Simpan Pengaturan</flux:button>
+                        <flux:button wire:click="updateSettings" variant="primary" color="blue">Simpan Pengaturan</flux:button>
                     </div>
                 </form>
             </flux:card>
@@ -84,42 +84,27 @@
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Diskon Produk Khusus</h3>
 
                 {{-- Form Tambah Diskon Produk --}}
-                <form action="{{ route('settings.discount.add') }}" method="POST">
-                    @csrf
-
+                <form wire:submit="addProductDiscount">
                     <div class="flex flex-col sm:flex-row gap-4 items-end">
                         <flux:field style="width: 65%;">
                             <flux:label>Produk</flux:label>
-                            <flux:select name="stok_barang_id" required>
-                                <option value="">* Pilih Produk *</option>
+                            <flux:select wire:model="stok_barang_id" required>
+                                <option value="">- Pilih Produk -</option>
                                 @foreach($products as $product)
-                                    <option value="{{ $product->id }}" {{ old('stok_barang_id') == $product->id ? 'selected' : '' }}>
-                                        {{ $product->nama_barang }}
-                                    </option>
+                                    <option value="{{ $product->id }}">{{ $product->nama_barang }}</option>
                                 @endforeach
                             </flux:select>
-                            @error('stok_barang_id') 
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            @error('stok_barang_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </flux:field>
 
                         <flux:field style="width: 20%;">
                             <flux:label>Diskon (%)</flux:label>
-                            <flux:input 
-                                type="number" 
-                                name="harga_diskon"
-                                value="{{ old('harga_diskon') }}"
-                                min="0" max="100" step="0.01" required 
-                            />
-                            @error('harga_diskon') 
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <flux:input type="number" wire:model="harga_diskon" min="0" max="100" step="0.01" />
+                            @error('harga_diskon') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </flux:field>
 
                         <div style="padding-top: 27px;" class="flex justify-end">
-                            <flux:button type="submit" variant="primary" color="blue" icon="plus">
-                                Tambah Diskon
-                            </flux:button>
+                            <flux:button type="submit" variant="primary" color="blue" icon="plus">Tambah</flux:button>
                         </div>
                     </div>
                 </form>
@@ -135,11 +120,9 @@
                                     <span>{{ $discount->stokBarang->nama_barang }}</span>
                                     <flux:badge size="sm" color="blue" class="ml-2">{{ $discount->harga_diskon }}%</flux:badge>
                                 </div>
-                                <form action="{{ route('settings.discount.remove', $discount->id) }}" method="POST" onsubmit="return confirm('Hapus diskon ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <flux:button type="submit" size="sm" icon="trash" variant="primary" class="text-red-500 hover:text-red-700">Hapus Diskon</flux:button>
-                                </form>
+                                <flux:button wire:click="removeProductDiscount({{ $discount->id }})" wire:confirm="Hapus diskon ini?" size="sm" icon="trash" variant="primary" color="red">
+                                    Hapus Diskon
+                                </flux:button>
                             </div>
                         @endforeach
                     </div>

@@ -13,69 +13,71 @@ class UserIndex extends Component
     use WithPagination;
 
     public $search = '';
+    public $showCreateModal = false;
+    public $showEditModal = false;
     public $editingUserId = null;
     public $selectedRole = '';
 
-    // Untuk create user
-    public $showCreateModal = false;
+    // Create
     public $name = '';
     public $email = '';
     public $password = '';
     public $password_confirmation = '';
-    public $newUser = 'kasir';
+    public $newUserRole = 'kasir';
 
-    protected $queryString = [
-        'search' => ['except' => ''],
-    ];
+    // Edit
+    public $editUserId = null;
+    public $editName = '';
+    public $editEmail = '';
+    public $editPassword = '';
+    public $editPassword_confirmation = '';  // ← Perbaiki nama
+    public $editRole = '';
 
-    protected function rules()
-    {
-        return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
-            'newUser' => ['required', Rule::in(['admin', 'kasir'])],
-        ];
-    }
+    protected $queryString = ['search' => ['except' => '']];
 
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
-
+    // ========== CREATE ==========
+    
     public function openCreateModal()
     {
         $this->resetValidation();
-        $this->reset(['name', 'email', 'password', 'password_confirmation', 'newUser']);
-        $this->newUser = 'kasir';
+        $this->reset(['name', 'email', 'password', 'password_confirmation', 'newUserRole']);
+        $this->newUserRole = 'kasir';
         $this->showCreateModal = true;
     }
 
     public function closeCreateModal()
     {
         $this->showCreateModal = false;
-        $this->reset(['name', 'email', 'password', 'password_confirmation', 'newUser']);
+        $this->reset(['name', 'email', 'password', 'password_confirmation', 'newUserRole']);
     }
 
     public function createUser()
     {
-        $this->validate();
-
-        User::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'password' => Hash::make($this->password),
-            'role' => $this->newUser,
+        $this->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+            'newUserRole' => ['required', Rule::in(['admin', 'kasir'])],
         ]);
 
-        session()->flash('success', 'Anggota baru berhasil ditambahkan.');
+        User::create([
+            'name'     => $this->name,
+            'email'    => $this->email,
+            'password' => Hash::make($this->password),
+            'role'     => $this->newUserRole,
+        ]);
+
+        $this->dispatch('notify', 'Anggota baru berhasil ditambahkan.', 'success');
         $this->closeCreateModal();
     }
 
-    public function startEditing($userId, $currentRole)
+    // ========== ROLE (Cepat) ==========
+
+    public function startEditing($userId)
     {
+        $user = User::findOrFail($userId);
         $this->editingUserId = $userId;
-        $this->selectedRole = $currentRole;
+        $this->selectedRole = $user->role;  
     }
 
     public function cancelEditing()
@@ -85,31 +87,38 @@ class UserIndex extends Component
 
     public function updateRole($userId)
     {
+        // dd($userId);
         $user = User::findOrFail($userId);
 
         if ($user->id === auth()->id() && $this->selectedRole === 'kasir') {
-            session()->flash('error', 'Anda tidak dapat mengubah role sendiri menjadi kasir.');
+            $this->dispatch('notify', 'Anda tidak dapat mengubah role sendiri menjadi kasir.', 'error');
             $this->cancelEditing();
             return;
         }
 
         $user->update(['role' => $this->selectedRole]);
-        session()->flash('success', 'Role user berhasil diperbarui.');
+        $this->dispatch('notify', 'Role user berhasil diperbarui.', 'success');
         $this->cancelEditing();
+    }
+
+    // ========== DELETE ==========
+
+    public function delete($id)
+    {
+        User::findOrFail($id)->delete();
+        $this->dispatch('notify', 'User berhasil dihapus.', 'success');
     }
 
     public function render()
     {
         $users = User::query()
-            ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                    ->orWhere('email', 'like', '%' . $this->search . '%');
+            ->when($this->search, function ($q) {
+                $q->where('name', 'like', '%' . $this->search . '%')
+                  ->orWhere('email', 'like', '%' . $this->search . '%');
             })
             ->orderBy('name')
             ->paginate(10);
 
-        return view('components.users-index', [
-            'users' => $users,
-        ]);
+        return view('components.users-index', compact('users'));
     }
 }

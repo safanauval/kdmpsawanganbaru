@@ -8,6 +8,7 @@ class SettingHelper
 {
     public static function get($key, $default = null)
     {
-        return Setting::getValue($key, $default);
+        $setting = Setting::where('key', $key)->first();
+        return $setting ? $setting->value : $default;
     }
 }

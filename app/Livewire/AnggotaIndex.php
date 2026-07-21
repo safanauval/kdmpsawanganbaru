@@ -124,7 +124,7 @@ class AnggotaIndex extends Component
 
     public function delete($id)
     {
-        Anggota::destroy($id);
+        Anggota::delete($id);
         session()->flash('success', 'Anggota dihapus.');
     }
 

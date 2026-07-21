@@ -427,7 +427,7 @@ class PinjamanIndex extends Component
      */
     public function delete($id)
     {
-        Pinjaman::destroy($id);
+        Pinjaman::delete($id);
         $this->dispatch('notify', 'Pinjaman berhasil dihapus.', 'success');
     }
 
