@@ -1,5 +1,5 @@
 <div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
-    class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
+    class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl">
     <div class="flex justify-between items-center">
         <div>
             <flux:heading size="xl">Stok Barang</flux:heading>
