@@ -1,4 +1,5 @@
-<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })" class="space-y-4">
+<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
+    class="space-y-4">
     <div class="flex justify-between items-center">
         <div>
             <flux:heading size="xl">Riwayat Transaksi</flux:heading>
@@ -7,7 +8,7 @@
     </div>
     {{-- Filter & Pencarian --}}
     <div class="space-y-2">
-        <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex flex-col sm:flex-row gap-2">
             <div class="flex-1" style="padding-top: 24px;">
                 <flux:input wire:model.live.debounce.100ms="search" placeholder="Cari Order ID / Nama Pelanggan"
                     icon="magnifying-glass" clearable />
