@@ -1,3 +1,3 @@
 <x-layouts::app :title="__('Admin Kasir')">
-    <livewire:adminkasir />
+    <livewire:kasir />
 </x-layouts::app>

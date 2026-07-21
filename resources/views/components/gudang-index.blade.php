@@ -1,4 +1,4 @@
-<div class="space-y-4">
+<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })" class="space-y-4">
     <div class="flex justify-between items-center">
         <div>
             <flux:heading size="xl">Gudang</flux:heading>
@@ -34,7 +34,7 @@
                         <flux:table.cell>{{ $g->telepon ?? '-' }}</flux:table.cell>
                         <flux:table.cell>{{ $g->alamat ?? '-' }}</flux:table.cell>
                         <flux:table.cell align="center">
-                            <div class="flex justify-center gap-2">
+                            <div class="flex justify-center gap-2 py-2">
                                 <flux:button.group>
                                     <flux:button wire:click="openEdit({{ $g->id }})" size="sm" icon="pencil-square"
                                         wire:navigate>

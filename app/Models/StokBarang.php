@@ -25,6 +25,8 @@ class StokBarang extends Model
         'gambar',
     ];
 
+    // ========== RELASI ==========
+
     public function kategori()
     {
         return $this->belongsTo(Kategori::class);
@@ -34,8 +36,27 @@ class StokBarang extends Model
     {
         return $this->belongsTo(Gudang::class);
     }
+
+    // ========== ACCESSORS ==========
+
     /**
-     * Accessor untuk mendapatkan URL data gambar (base64).
+     * Format harga jual Rupiah
+     */
+    public function getHargaJualRupiahAttribute(): string
+    {
+        return 'Rp ' . number_format($this->harga_jual, 0, ',', '.');
+    }
+
+    /**
+     * Format harga beli Rupiah
+     */
+    public function getHargaBeliRupiahAttribute(): string
+    {
+        return 'Rp ' . number_format($this->harga_beli, 0, ',', '.');
+    }
+
+    /**
+     * Accessor untuk mendapatkan URL data gambar (base64)
      */
     public function getGambarUrlAttribute(): ?string
     {

@@ -1,4 +1,4 @@
-<div class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
+<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })" class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
     {{-- Header --}}
     <div class="flex justify-between items-center flex-wrap gap-3">
         <div>
@@ -24,40 +24,44 @@
         <div class="overflow-x-auto">
             <flux:table container>
                 <flux:table.columns sticky>
-                    <flux:table.column>Kode</flux:table.column>
-                    <flux:table.column>Nama</flux:table.column>
-                    <flux:table.column>Email</flux:table.column>
-                    <flux:table.column>Telepon</flux:table.column>
-                    <flux:table.column>Tanggal Masuk</flux:table.column>
-                    <flux:table.column align="center">Aksi</flux:table.column>
+                    <flux:table.column align="start">Kode</flux:table.column>
+                    <flux:table.column align="start">Nama</flux:table.column>
+                    <flux:table.column align="start">Email</flux:table.column>
+                    <flux:table.column align="center">Telepon</flux:table.column>
+                    <flux:table.column align="center">Tanggal Masuk</flux:table.column>
+                    <flux:table.column align="center">Total Simpanan</flux:table.column>
+                    <flux:table.column align="center" >Aksi</flux:table.column>
                 </flux:table.columns>
 
                 <flux:table.rows>
                     @forelse($anggotas as $a)
                         <flux:table.row wire:key="anggota-{{ $a->id_anggota }}">
-                            <flux:table.cell class="font-mono text-xs font-semibold">
+                            <flux:table.cell align="start" class="font-mono font-semibold py-2">
                                 {{ $a->kode_anggota }}
                             </flux:table.cell>
-                            <flux:table.cell class="font-medium">
+                            <flux:table.cell align="start">
                                 {{ $a->nama_anggota }}
                             </flux:table.cell>
-                            <flux:table.cell>
+                            <flux:table.cell align="start">
                                 {{ $a->email_anggota ?: '-' }}
                             </flux:table.cell>
-                            <flux:table.cell>
+                            <flux:table.cell align="center">
                                 {{ $a->telepon_anggota ?: '-' }}
                             </flux:table.cell>
-                            <flux:table.cell>
+                            <flux:table.cell align="center">
                                 {{ $a->tanggal_masuk ? \Carbon\Carbon::parse($a->tanggal_masuk)->translatedFormat('d M Y') : '-' }}
                             </flux:table.cell>
                             <flux:table.cell align="center">
+                                Rp {{ number_format($this->getTotalSimpanan($a->id_anggota), 0, ',', '.') }}
+                            </flux:table.cell>
+                            <flux:table.cell align="end" class="py-2">
                                 <flux:button.group>
-                                    <flux:button wire:click="openEdit({{ $a->id_anggota }})" size="xs" icon="pencil-square"
+                                    <flux:button wire:click="openEdit({{ $a->id_anggota }})" size="sm" icon="pencil-square"
                                         wire:navigate>
                                         Edit
                                     </flux:button>
                                     <flux:button wire:click="delete({{ $a->id_anggota }})"
-                                        wire:confirm="Yakin hapus anggota ini?" size="xs" icon="trash" variant="danger">
+                                        wire:confirm="Yakin hapus anggota ini?" size="sm" icon="trash" variant="danger">
                                         Hapus
                                     </flux:button>
                                 </flux:button.group>

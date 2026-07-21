@@ -1,4 +1,4 @@
-<div class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
+<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })" class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
     <div class="flex justify-between items-center">
         <div>
             <flux:heading size="xl">Kategori</flux:heading>
@@ -28,19 +28,19 @@
             <flux:table.rows>
                 @forelse($kategori as $kat)
                     <flux:table.row>
-                        <flux:table.cell class="text-neutral-500 dark:text-neutral-400">
+                        <flux:table.cell class="text-neutral-500 dark:text-neutral-400" >
                             {{ ($kategori->currentPage() - 1) * $kategori->perPage() + $loop->iteration }}
                         </flux:table.cell>
                         <flux:table.cell variant="strong" class="text-center">
                             {{ $kat->nama }}
                         </flux:table.cell>
                         <flux:table.cell align="center">
-                            <div class="flex justify-center gap-2">
+                            <div class="flex justify-center gap-2 py-2">
                                 <flux:button.group>
                                     <flux:button wire:click="openEdit({{ $kat->id }})" color="blue" size="sm"
                                         icon="pencil-square" wire:navigate>
                                         Edit
-                                    </flux:button>
+                                    </flux:button >
                                     <form action="{{ route('kategori.destroy', $kat) }}" method="POST"
                                         onsubmit="return confirm('Yakin hapus kategori ini?')">
                                         @csrf

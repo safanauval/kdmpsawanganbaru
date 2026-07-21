@@ -15,9 +15,10 @@ return new class extends Migration {
                 ->references('id_anggota')
                 ->on('anggota')
                 ->nullOnDelete();
-            $table->enum('jenis_simpan', ['pokok', 'wajib']);
+            $table->enum('jenis_simpanan', ['pokok', 'wajib']);
             $table->decimal('jumlah', 15, 0);
-            $table->string('metode_pembayaran')->default('tunai');
+            $table->enum('payment_method', ['tunai', 'non-tunai'])->default('tunai');
+            $table->decimal('total_simpanan', 15, 0)->default(0);
             $table->date('tanggal');
             $table->timestamps();
         });

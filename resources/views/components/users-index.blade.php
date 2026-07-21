@@ -1,4 +1,4 @@
-<div class="space-y-4">
+<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })" class="space-y-4">
     {{-- Header dengan Search dan Tombol Tambah --}}
     <div class="flex gap-4">
         <div class="flex-1">
@@ -42,7 +42,7 @@
                                 </flux:badge>
                             @endif
                         </flux:table.cell>
-                        <flux:table.cell align="end">
+                        <flux:table.cell align="end" class="py-2">
                             @if($editingUserId === $user->id)
                                 <flux:button.group>
                                     <flux:button wire:click="updateRole({{ $user->id }})" size="sm" variant="primary"

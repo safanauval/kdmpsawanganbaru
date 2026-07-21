@@ -11,6 +11,18 @@
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('css/welcome.css') }}">
     <!-- Flux UI Appearance (wajib untuk komponen Flux) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
     @fluxAppearance
 </head>
 
@@ -38,7 +50,10 @@
         <div class="hero-overlay"></div>
         <div class="hero-content-center">
             <span class="hero-badge">#KoperasiDigital</span>
-            <h1>Sistem Informasi <br><span class="hero-highlight">Manajemen Koperasi</span> Desa</h1>
+            <h1>
+                {{ \App\Models\Setting::getValue('hero_title_line1', 'Manajemen') }} <br>
+                <span class="hero-highlight">{{ \App\Models\Setting::getValue('company_name', 'Koperasi Desa Merah Putih') }}</span>
+            </h1>
             <p class="hero-desc">Meningkatkan efisiensi dan transparansi operasional koperasi desa dengan teknologi
                 modern</p>
             <!-- Statistik -->
@@ -67,125 +82,187 @@
         </div>
     </section>
 
-    <div class="container service">
+    <!-- ========== LAYANAN =========== -->
+     <section class="container service">
         <!-- Layanan Utama -->
-        <div id="layanan" class="section-title reveal">
-            <h2>Layanan Kami</h2>
-            <p>Fitur unggulan untuk mendukung operasional koperasi modern</p>
+        <div class="text-center mb-16" id="layanan">
+            <h2 class="text-3xl sm:text-4xl font-bold text-black mb-4">Layanan Kami</h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Fitur unggulan untuk mendukung operasional koperasi modern</p>
         </div>
-        <div class="services-grid">
-            <div class="service-card reveal">
-                <div class="service-icon">
-                    <flux:icon.user-group color="white" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {{-- Card 1: Manajemen Anggota --}}
+            <div class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
+                    <flux:icon.user-group color="white" class="w-8 h-8" />
                 </div>
-                <h3>Manajemen Anggota</h3>
-                <p>Database anggota, simpanan, dan riwayat transaksi terintegrasi.</p>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Manajemen Anggota</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Database anggota, simpanan, dan riwayat transaksi terintegrasi.</p>
             </div>
-            <div class="service-card reveal">
-                <div class="service-icon">
-                    <flux:icon.wallet color="white" />
-                </div>
-                <h3>Simpan Pinjam</h3>
-                <p>Proses pengajuan pinjaman dan pencatatan simpanan secara digital.</p>
-            </div>
-            <div class="service-card reveal">
-                <div class="service-icon">
-                    <flux:icon.shopping-cart color="white" />
-                </div>
-                <h3>Gerai Sembako</h3>
-                <p>Transaksi penjualan cepat dengan manajemen stok otomatis.</p>
-            </div>
-            <div class="service-card reveal">
-                <div class="service-icon">
-                    <flux:icon.chart-bar color="white" />
-                </div>
-                <h3>Laporan & Analitik</h3>
-                <p>Pantau kinerja keuangan dan SHU secara real-time.</p>
-            </div>
-        </div>
-    </div>
 
-    <div class="container news">
-        <!-- Berita & Informasi -->
-        <div id="informasi" class="info-grid">
-            <div class="news-card reveal">
-                <div class="news-title">
-                    <flux:icon.newspaper style="width: 24px; height: 24px;" />
-                    Berita Terkini
+            {{-- Card 2: Simpanan --}}
+            <div class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
+                    <flux:icon.wallet color="white" class="w-8 h-8" />
                 </div>
-                <ul class="news-list">
-                    <li>
-                        <span class="news-date">21 Juli 2025</span>
-                        <a href="https://simkopdes.go.id/pers/berita/detail/6" style="text-align: left;">Presiden
-                            Prabowo Resmikan Kopdes Merah
-                            Putih, Momentum Kembalikan Sistem Ekonomi Ke Pasal 33 UUD 45</a>
-                    </li>
-                    <li>
-                        <span class="news-date">21 Juli 2025</span>
-                        <a href="https://simkopdes.go.id/pers/berita/detail/7" style="text-align: left;">Prabowo
-                            Launching 80.000 Kopdes Merah
-                            Putih di Klaten Hari Ini</a>
-                    </li>
-                    <li>
-                        <span class="news-date">20 Juli 2025</span>
-                        <a href="https://simkopdes.go.id/pers/berita/detail/8" style="text-align: left;">Hari Ini
-                            Presiden RI Resmikan 80.000
-                            Kopdes Merah Putih</a>
-                    </li>
-                </ul>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Simpanan</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Simpanan sebagai modal maupun tabungan anggota.</p>
             </div>
-            <div class="news-card reveal">
-                <div class="news-title">
-                    <flux:icon.identification style="width: 24px; height: 24px;" />
-                    Kontak & Informasi
+
+            {{-- Card 3: Gerai Sembako --}}
+            <div class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
+                    <flux:icon.shopping-cart color="white" class="w-8 h-8" />
                 </div>
-                <div class="kontak-item">
-                    <div class="kontak-logo">
-                        <flux:icon.envelope color="white" />
-                    </div>
-                    <div style="text-align: left;">
-                        <strong>Email</strong><br>
-                        <small><a href="mailto:korwil@merahputih.kop.id"
-                                style="text-decoration: none; color: #475569;">korwil@merahputih.kop.id</a></small>
-                    </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Gerai Sembako</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Transaksi penjualan cepat dengan manajemen stok otomatis.</p>
+            </div>
+
+            {{-- Card 4: Laporan & Analitik --}}
+            <div class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
+                    <flux:icon.chart-bar color="white" class="w-8 h-8" />
                 </div>
-                <div class="kontak-item">
-                    <div class="kontak-logo">
-                        <flux:icon.phone color="white" />
-                    </div>
-                    <div style="text-align: left;">
-                        <strong>Telepon</strong><br>
-                        <small><a href="tel:1500587" style="text-decoration: none; color: #475569;">1500587</a></small>
-                    </div>
-                </div>
-                <div class="kontak-item">
-                    <div class="kontak-logo">
-                        <flux:icon.map-pin color="white" />
-                    </div>
-                    <div style="text-align: left;">
-                        <strong>Alamat</strong><br>
-                        <small>Graha Mandiri Lt.3, Jl. Imam Bonjol No.61,<br>Menteng, Jakarta Pusat 10310</small>
-                    </div>
-                </div>
-                <div class="kontak-item">
-                    <div class="kontak-logo">
-                        <flux:icon.flag color="white" />
-                    </div>
-                    <div style="text-align: left;">
-                        <strong>Pengaduan</strong><br>
-                        <small><a href="https://lapor.go.id" target="_blank"
-                                style="text-decoration: none; color: #475569;">Simwas Koperasi | Lapor.go.id</a></small>
-                    </div>
-                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Laporan & Analitik</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Pantau kinerja keuangan dan SHU secara real-time.</p>
             </div>
         </div>
-    </div>
+     </section>
+
+    <!-- ========== BERITA & KONTAK ========== -->
+    <section id="informasi" class="min-h-screen flex items-center justify-center bg-white py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            
+            {{-- Judul Section --}}
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Informasi & Kontak</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">Berita terkini dan kontak resmi koperasi</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                
+                {{-- ========== BERITA ========== --}}
+                <div class="bg-gray-50 rounded-3xl p-8 border border-gray-100">
+                    {{-- Header --}}
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <flux:icon.newspaper class="w-6 h-6 text-blue-600" />
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Berita Terkini</h3>
+                    </div>
+
+                    {{-- List Berita --}}
+                    <div class="space-y-4">
+                        <!-- Berita 1 -->
+                        <a href="https://simkopdes.go.id/pers/berita/detail/6" class="group block bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+                            <span class="text-xs font-semibold text-blue-600 uppercase tracking-wide">21 Juli 2025</span>
+                            <h4 class="mt-2 text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-relaxed">
+                                Presiden Prabowo Resmikan Kopdes Merah Putih, Momentum Kembalikan Sistem Ekonomi Ke Pasal 33 UUD 45
+                            </h4>
+                        </a>
+
+                        <!-- Berita 2 -->
+                        <a href="https://simkopdes.go.id/pers/berita/detail/7" class="group block bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+                            <span class="text-xs font-semibold text-blue-600 uppercase tracking-wide">21 Juli 2025</span>
+                            <h4 class="mt-2 text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-relaxed">
+                                Prabowo Launching 80.000 Kopdes Merah Putih di Klaten Hari Ini
+                            </h4>
+                        </a>
+
+                        <!-- Berita 3 -->
+                        <a href="https://simkopdes.go.id/pers/berita/detail/8" class="group block bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+                            <span class="text-xs font-semibold text-blue-600 uppercase tracking-wide">20 Juli 2025</span>
+                            <h4 class="mt-2 text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-relaxed">
+                                Hari Ini Presiden RI Resmikan 80.000 Kopdes Merah Putih
+                            </h4>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- ========== KONTAK ========== --}}
+                <div class="bg-gray-50 rounded-3xl p-8 border border-gray-100">
+                    {{-- Header --}}
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                            <flux:icon.identification class="w-6 h-6 text-green-600" />
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900">Kontak & Informasi</h3>
+                    </div>
+
+                    {{-- List Kontak --}}
+                    <div class="space-y-4">
+                        <!-- Email -->
+                        <div class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                            <div class="w-11 h-11 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <flux:icon.envelope class="w-5 h-5 text-red-500" />
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Email</p>
+                                <a href="mailto:{{ \App\Models\Setting::getValue('email', 'kopkelmerahputihsawanganbaru@gmail.com') }}" 
+                                class="text-sm text-gray-900 hover:text-blue-600 transition-colors break-all">
+                                    {{ \App\Models\Setting::getValue('email', 'kopkelmerahputihsawanganbaru@gmail.com') }}
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Telepon -->
+                        <div class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                            <div class="w-11 h-11 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <flux:icon.phone class="w-5 h-5 text-blue-500" />
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Telepon</p>
+                                <a href="tel:{{ \App\Models\Setting::getValue('phone', '081219999922') }}" 
+                                class="text-sm text-gray-900 hover:text-blue-600 transition-colors">
+                                    {{ \App\Models\Setting::getValue('phone', '0812-1999-9922') }}
+                                </a>
+                                @if(\App\Models\Setting::getValue('phone2'))
+                                    <br>
+                                    <a href="tel:{{ \App\Models\Setting::getValue('phone2') }}" 
+                                    class="text-sm text-gray-900 hover:text-blue-600 transition-colors">
+                                        {{ \App\Models\Setting::getValue('phone2') }}
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Alamat -->
+                        <div class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                            <div class="w-11 h-11 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <flux:icon.map-pin class="w-5 h-5 text-green-500" />
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Alamat</p>
+                                <p class="text-sm text-gray-900 leading-relaxed">
+                                    {{ \App\Models\Setting::getValue('address', 'Jl. H. Maksum No.4/3, Sawangan Baru, Kec. Sawangan, Kota Depok, Jawa Barat 16511') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Pengaduan -->
+                        <div class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                            <div class="w-11 h-11 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <flux:icon.flag class="w-5 h-5 text-orange-500" />
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Pengaduan</p>
+                                <a href="https://lapor.go.id" target="_blank" 
+                                class="text-sm text-gray-900 hover:text-blue-600 transition-colors">
+                                    {{ \App\Models\Setting::getValue('complaint_contact', 'korwil@merahputih.kop.id | 08111-451-587') }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-copy">
-                &copy; 2026 SIMKOPDES. Seluruh hak cipta dilindungi.
+                &copy; 2026 SIMKOPDES SAWANGAN BARU. Seluruh hak cipta dilindungi.
             </div>
         </div>
     </footer>

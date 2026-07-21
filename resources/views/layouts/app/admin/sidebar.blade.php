@@ -109,7 +109,7 @@
     <flux:sidebar sticky collapsible="mobile"
         class="border-r border-black-200 bg-black-900 dark:border-zinc-700 dark:bg-zinc-900">
 
-        <flux:sidebar.nav scrollable style="padding-bottom: 20px; height: calc(100% - 55px);" class="overflow-y-auto">
+        <flux:sidebar.nav scrollable style="padding-bottom: 20px; height: calc(100% - 55px);" class="overflow-y-hidden">
             {{-- Grup Platform --}}
             <flux:sidebar.group :heading="__('Overview')" class="grid">
                 <flux:sidebar.item icon="presentation-chart-bar" :href="route('dashboard')"
@@ -120,12 +120,12 @@
 
             {{-- Grup Transaksi --}}
             <flux:sidebar.group :heading="__('Transaksi')" class="grid">
-                <flux:sidebar.item icon="calculator" :href="route('admin-kasir')"
-                    :current="request()->routeIs('admin-kasir.*')" wire:navigate>
+                <flux:sidebar.item icon="calculator" :href="route('adminKasir')"
+                    :current="request()->routeIs('adminKasir')" wire:navigate>
                     {{ __('Kasir') }}
                 </flux:sidebar.item>
                 <flux:sidebar.item icon="document-text" :href="route('riwayat-transaksi.index')"
-                    :current="request()->routeIs('riwayat-transaksi.*')" wire:navigate>
+                    :current="request()->routeIs('riwayat-transaksi')" wire:navigate>
                     {{ __('Riwayat Transaksi') }}
                 </flux:sidebar.item>
             </flux:sidebar.group>
@@ -171,6 +171,9 @@
                     <flux:sidebar.item icon="wallet" :href="route('simpanan.index')"
                         :current="request()->routeIs('simpanan.*')" wire:navigate>
                         {{ __('Simpanan') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="banknotes" :href="route('pinjaman.index')" :current="request()->routeIs('admin.pinjaman.*')" wire:navigate>
+                        Pinjaman
                     </flux:sidebar.item>
                 </div>
             </div>

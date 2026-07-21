@@ -5,7 +5,8 @@ use App\Http\Controllers\{
     DashboardController,
     GudangController,
     KategoriController,
-    MidtransCallbackController,
+    MidtransCallbackController, 
+    PinjamanController,
     ProfileController,
     RiwayatTransaksiController,
     RiwayatTransaksiKsrController,
@@ -44,6 +45,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Simpanan
         Route::get('simpanan', [SimpananController::class, 'index'])->name('simpanan.index');
 
+        // Pinjaman
+        Route::get('pinjaman', [PinjamanController::class, 'index'])->name('pinjaman.index');
+
         // Settings
         Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
@@ -54,7 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('gudang', [GudangController::class, 'index'])->name('gudang.index');
 
         // Admin Kasir (jika diperlukan)
-        Route::get('kasir', fn() => view('pages.admin.kasir.index'))->name('admin-kasir');
+        Route::get('kasir', fn() => view('pages.admin.kasir.index'))->name('adminKasir');
     });
 
     // ========== RUTE KASIR ==========

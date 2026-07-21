@@ -161,24 +161,23 @@
             <flux:field>
                 <flux:label>Kode Anggota (opsional)</flux:label>
                 <flux:input wire:model.live="kodeAnggota" placeholder="Masukkan kode anggota..." />
-                @if($id_anggota && $nama_anggota)
-                    <flux:text class="flex items-center gap-2 mt-2 text-green-500">
+                @if($id_anggota)
+                    <div class="flex items-center gap-2 mt-2 text-green-500">
                         <flux:icon.check-circle color="green" class="w-4 h-4" />
-                        {{ $nama_anggota }} ({{ $kodeAnggota }})
-                    </flux:text>
+                        <span class="text-xs">Anggota terdaftar - Diskon anggota diterapkan</span>
+                    </div>
                 @elseif($kodeAnggota && !$id_anggota)
-                    <flux:text class="flex items-center gap-2 mt-2 text-red-500">
+                    <div class="flex items-center gap-2 mt-2 text-red-500">
                         <flux:icon.x-circle color="red" class="w-4 h-4" />
-                        Anggota tidak ditemukan.
-                    </flux:text>
+                        <span class="text-xs">Anggota tidak ditemukan</span>
+                    </div>
                 @endif
-                @error('id_anggota') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </flux:field>
 
-            {{-- Nama Pelanggan (akan otomatis terisi jika anggota dipilih) --}}
+            {{-- Nama Pelanggan --}}
             <flux:field>
-                <flux:label>Nama Pelanggan (opsional)</flux:label>
-                <flux:input wire:model="customerName" placeholder="Nama" />
+                <flux:label>Nama Pelanggan</flux:label>
+                <flux:input wire:model="namaPelanggan" placeholder="Nama pelanggan" />
             </flux:field>
 
             {{-- Pilihan metode pembayaran dengan Tabs --}}
@@ -328,6 +327,41 @@
         @endif
     </flux:modal>
     @push('scripts')
+    <!-- Payment -->
+
+    <script src="{{ config('services.midtrans.is_production') 
+            ? 'https://app.midtrans.com/snap/snap.js' 
+            : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" 
+            data-client-key="{{ config('services.midtrans.client_key') }}">
+        </script>
+
+        <script>
+            document.addEventListener('livewire:init', () => {
+                Livewire.on('open-snap', (event) => {
+                    const snapToken = event.snapToken;
+                    
+                    if (!snapToken) {
+                        alert('Gagal mendapatkan token pembayaran.');
+                        return;
+                    }
+
+                    window.snap.pay(snapToken, {
+                        onSuccess: function(result) {
+                            @this.call('handlePaymentSuccess', result);
+                        },
+                        onPending: function(result) {
+                            @this.call('handlePaymentPending', result);
+                        },
+                        onError: function(result) {
+                            @this.call('handlePaymentError', result);
+                        },
+                        onClose: function() {
+                            @this.call('handlePaymentClose');
+                        }
+                    });
+                });
+            });
+        </script>
         <script>
             document.addEventListener('livewire:init', function () {
                 Livewire.on('print-receipt', () => {
@@ -336,38 +370,38 @@
                     document.title = 'Struk Pembayaran';
                     const printWindow = window.open('', '_blank');
                     printWindow.document.write(`                                                                                                                                                                          <!DOCTYPE html>
-                                                    <html>
-                                                        <head>
-                                                            <title>Struk Pembayaran</title>
-                                                            <style>
-                                                                body {
-                                                                    font-family: 'Courier New', Courier, monospace;
-                                                                    padding: 20px;
-                                                                    max-width: 300px;
-                                                                    margin: auto;
-                                                                }
-                                                                table {
-                                                                    width: 100%;
-                                                                    border-collapse: collapse;
-                                                                }
-                                                                th, td {
-                                                                    padding: 5px 0;
-                                                                }
-                                                                .text-right {
-                                                                    text-align: right;
-                                                                }
-                                                                .border-t {
-                                                                    border-top: 1px dashed #000;
-                                                                }
-                                                                .border-b {
-                                                                    border-bottom: 1px dashed #000;
-                                                                }
-                                                            </style>
-                                                        </head>
-                                                        <body>
-                                                            ${printContent.outerHTML}
-                                                        </body>
-                                                    </html>`);
+                    <html>
+                    <head>
+                    <title>Struk Pembayaran</title>
+                    <style>
+                    body { 
+                            font-family: 'Courier New', Courier, monospace;
+                            padding: 20px;
+                            max-width: 300px;
+                            margin: auto;
+                        }
+                    table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                    th, td {
+                            padding: 5px 0;
+                        }
+                    .text-right {
+                                text-align: right;
+                            }
+                    .border-t {
+                               border-top: 1px dashed #000;
+                            }
+                    .border-b {
+                                border-bottom: 1px dashed #000;
+                            }
+                    </style>
+                    </head>
+                    <body>
+                    ${printContent.outerHTML}
+                    </body>
+                    </html>`);
                     printWindow.document.close();
                     printWindow.print();
                     printWindow.onafterprint = () => printWindow.close();

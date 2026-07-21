@@ -17,8 +17,7 @@ return new class extends Migration {
                 ->references('id_anggota')
                 ->on('anggota')
                 ->nullOnDelete();
-            $table->string('nama_anggota', 80)->nullable();
-            $table->string('customer_name', 100)->nullable();
+            $table->string('nama_pelanggan', 100)->nullable();
             $table->decimal('discount_amount', 12, 2)->nullable();
             $table->decimal('total', 12, 2);
             $table->enum('payment_method', ['tunai', 'non-tunai'])->default('tunai');

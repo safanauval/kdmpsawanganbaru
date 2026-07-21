@@ -12,7 +12,7 @@ class StokBarangController extends Controller
     public function index()
     {
         $stokBarang = StokBarang::with(['kategori', 'gudang'])->latest()->paginate(10);
-        return view('pages.admin.stok-barang.index', compact('stokBarang'));
+        return view('pages.kasir.stok-barang.index', compact('stokBarang'));
     }
 
     public function create()
@@ -51,14 +51,14 @@ class StokBarangController extends Controller
 
     public function show(StokBarang $stokBarang)
     {
-        return view('pages.admin.stok-barang.show', compact('stokBarang'));
+        return view('pages.kasir.stok-barang.show', compact('stokBarang'));
     }
 
     public function edit(StokBarang $stokBarang)
     {
         $kategori = Kategori::orderBy('nama')->get();
         $gudang = Gudang::orderBy('nama_gudang')->get();
-        return view('pages.admin.stok-barang.edit', compact('stokBarang', 'kategori', 'gudang'));
+        return view('pages.kasir.stok-barang.edit', compact('stokBarang', 'kategori', 'gudang'));
     }
 
     public function update(Request $request, StokBarang $stokBarang)

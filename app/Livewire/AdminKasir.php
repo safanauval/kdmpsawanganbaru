@@ -195,34 +195,33 @@ class AdminKasir extends Component
         $this->change = max(0, (float) $this->paymentAmount - (float) $this->total);
     }
 
-    // ========== PROSES PEMBAYARAN ==========
-
     public function processPayment()
     {
         $this->validate([
-            'paymentMethod' => 'required',
-            'customerName' => 'nullable|string|max:100',
-            'id_anggota' => 'nullable|exists:anggota,id_anggota',
+            'paymentMethod' => 'required|in:tunai,non-tunai',
+            'customerName'  => 'nullable|string|max:100',
+            'id_anggota'    => 'nullable|exists:anggota,id_anggota',
         ]);
 
+        // ========== PEMBAYARAN TUNAI ==========
         if ($this->paymentMethod === 'tunai') {
             $this->validate(['paymentAmount' => 'required|numeric|min:' . $this->total]);
 
             $order = null;
             DB::transaction(function () use (&$order) {
                 $order = Order::create([
-                    'order_id' => 'KPDES-CASH-' . time(),
-                    'user_id' => auth()->id(),
-                    'user_name' => auth()->user()->name ?? null,
-                    'id_anggota' => $this->id_anggota,
-                    'nama_anggota' => $this->nama_anggota,
-                    'customer_name' => $this->customerName,
-                    'total' => $this->total,
+                    'order_id'        => 'KPDES-CASH-' . time(),
+                    'user_id'         => auth()->id(),
+                    'user_name'       => auth()->user()->name ?? null,
+                    'id_anggota'      => $this->id_anggota,
+                    'nama_anggota'    => $this->nama_anggota,
+                    'customer_name'   => $this->customerName,
+                    'total'           => $this->total,
                     'discount_amount' => $this->discountAmount,
-                    'payment_method' => 'tunai',
-                    'payment_status' => 'paid',
-                    'payment_amount' => $this->paymentAmount,
-                    'cart_items' => $this->cart,
+                    'payment_method'  => 'tunai',
+                    'payment_status'  => 'paid',
+                    'payment_amount'  => $this->paymentAmount,
+                    'cart_items'      => $this->cart,
                 ]);
 
                 $this->reduceStock($this->cart);
@@ -234,81 +233,74 @@ class AdminKasir extends Component
             $this->closePaymentModal();
             $this->dispatch('notify', 'Pembayaran tunai berhasil!');
             return;
+        }
 
-        } elseif ($this->paymentMethod === 'non-tunai') {
-            // --- Transfer / QRIS via Midtrans Snap ---
-            try {
-                $orderId = 'KPDES-EPAY' . strtoupper(uniqid()) . '-' . time();
-                $grossAmount = (int) $this->total;
+        // ========== PEMBAYARAN NON-TUNAI (MIDTRANS SNAP) ==========
+        try {
+            $orderId = 'KPDES-' . strtoupper(uniqid()) . '-' . time();
+            $grossAmount = (int) $this->total;
 
-                $transactionDetails = [
-                    'order_id' => $orderId,
-                    'gross_amount' => $grossAmount,
-                ];
+            $transactionDetails = [
+                'order_id'     => $orderId,
+                'gross_amount' => $grossAmount,
+            ];
 
-                $customerDetails = [];
-                if ($this->customerName) {
-                    $customerDetails['first_name'] = $this->customerName;
-                }
-
-                $itemDetails = [];
-                foreach ($this->cart as $item) {
-                    $itemDetails[] = [
-                        'id' => (string) $item['id'],
-                        'price' => (int) $item['price'],
-                        'quantity' => $item['quantity'],
-                        'name' => substr($item['name'], 0, 50),
-                    ];
-                }
-
-                if ($this->discountAmount > 0) {
-                    $itemDetails[] = [
-                        'id' => 'DISKON',
-                        'price' => -(int) $this->discountAmount,
-                        'quantity' => 1,
-                        'name' => 'Diskon ' . ($this->id_anggota ? 'Anggota' : 'Non-Anggota'),
-                    ];
-                }
-
-                \Midtrans\Config::$serverKey = config('services.midtrans.server_key');
-                \Midtrans\Config::$isProduction = config('services.midtrans.is_production');
-                \Midtrans\Config::$isSanitized = config('services.midtrans.is_sanitized');
-                \Midtrans\Config::$is3ds = config('services.midtrans.is_3ds');
-
-                $params = [
-                    'transaction_details' => $transactionDetails,
-                    'customer_details' => $customerDetails,
-                    'item_details' => $itemDetails,
-                ];
-
-                $snapToken = \Midtrans\Snap::getSnapToken($params);
-
-                Order::create([
-                    'order_id' => $orderId,
-                    'user_id' => auth()->id(),
-                    'user_name' => auth()->user()->name ?? null,
-                    'id_anggota' => $this->id_anggota,
-                    'nama_anggota' => $this->nama_anggota,
-                    'customer_name' => $this->customerName,
-                    'total' => $this->total,
-                    'discount_amount' => $this->discountAmount,
-                    'payment_method' => $this->paymentMethod,
-                    'payment_status' => 'pending',
-                    'payment_amount' => $this->total,
-                    'snap_token' => $snapToken,
-                    'cart_items' => $this->cart,
-                ]);
-
-                $this->dispatch('open-snap', snapToken: $snapToken);
-                $this->closePaymentModal();
-
-            } catch (\Exception $e) {
-                $this->dispatch('notify', 'Gagal terkoneksi dengan Midtrans: ' . $e->getMessage(), 'error');
+            $customerDetails = [];
+            if ($this->customerName) {
+                $customerDetails['first_name'] = $this->customerName;
             }
+
+            $itemDetails = [];
+            foreach ($this->cart as $item) {
+                $itemDetails[] = [
+                    'id'       => (string) $item['id'],
+                    'price'    => (int) round($item['price']),
+                    'quantity' => (int) $item['quantity'],
+                    'name'     => substr($item['name'], 0, 50),
+                ];
+            }
+
+            // Konfigurasi Midtrans (SUDAH TERBUKTI BERFUNGSI)
+            \Midtrans\Config::$serverKey    = config('services.midtrans.server_key');
+            \Midtrans\Config::$clientKey    = config('services.midtrans.client_key');
+            \Midtrans\Config::$isProduction = config('services.midtrans.is_production');
+            \Midtrans\Config::$isSanitized  = config('services.midtrans.is_sanitized');
+            \Midtrans\Config::$is3ds        = config('services.midtrans.is_3ds');
+
+            $params = [
+                'transaction_details' => $transactionDetails,
+                'customer_details'    => $customerDetails,
+                'item_details'        => $itemDetails,
+            ];
+
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+            // Simpan order
+            Order::create([
+                'order_id'        => $orderId,
+                'user_id'         => auth()->id(),
+                'user_name'       => auth()->user()->name ?? null,
+                'id_anggota'      => $this->id_anggota,
+                'nama_anggota'    => $this->nama_anggota,
+                'customer_name'   => $this->customerName,
+                'total'           => $this->total,
+                'discount_amount' => $this->discountAmount,
+                'payment_method'  => $this->paymentMethod,
+                'payment_status'  => 'pending',
+                'payment_amount'  => $this->total,
+                'snap_token'      => $snapToken,
+                'cart_items'      => $this->cart,
+            ]);
+
+            // Buka popup Midtrans
+            $this->dispatch('open-snap', snapToken: $snapToken);
+            $this->closePaymentModal();
+
+        } catch (\Exception $e) {
+            \Log::error('Midtrans Error: ' . $e->getMessage());
+            $this->dispatch('notify', 'Gagal memproses pembayaran. Silakan coba lagi.', 'error');
         }
     }
-
-    // ========== CALLBACK MIDTRANS ==========
 
     public function handlePaymentSuccess($result)
     {
@@ -346,7 +338,12 @@ class AdminKasir extends Component
 
     public function printReceipt()
     {
-        $this->dispatch('print-receipt');
+            if (!$this->lastOrder) {
+            $this->dispatch('notify', 'Tidak ada struk untuk dicetak.', 'error');
+            return;
+        }
+    // Dispatch event dengan sedikit delay untuk memastikan DOM siap
+    $this->dispatch('print-receipt');
     }
 
     public function closeReceiptModal()
@@ -385,7 +382,7 @@ class AdminKasir extends Component
 
     public function render()
     {
-        return view('components.adminkasir', [
+        return view('components.kasir', [
             'products' => $this->filteredProducts,
             'categories' => $this->categories,
             'anggotas' => $this->anggotaList,

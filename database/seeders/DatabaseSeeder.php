@@ -56,5 +56,29 @@ class DatabaseSeeder extends Seeder
             ['id' => 5, 'key' => 'member_discount', 'value' => '10'],
             ['id' => 6, 'key' => 'non_member_discount', 'value' => '0'],
         ]);
+
+        \DB::table('anggota')->insert([
+           'id_anggota' => 1,
+           'kode_anggota' => 'KMPSB001030726',
+           'nama_anggota' => 'Safa Nauval Nugraha',
+           'email_anggota' => 'safanauval@gmail.com',
+           'telepon_anggota' => '-',
+           'alamat_anggota' => '-',
+           'tanggal_masuk' => '2026-07-03',
+           'created_at' => '2026-07-03 07:07:07',
+           'updated_at' => '2026-07-03 07:07:07',
+        ]);
+
+        \DB::table('simpan')->insert([
+           'id' => 1,
+           'id_anggota' => '1',
+           'jenis_simpanan' => 'pokok',
+           'jumlah' => 100000,
+           'payment_method' => 'tunai',
+           'tanggal' => '2026-07-03',
+           'total_simpanan' => '100000',
+           'created_at' => '2026-07-03 07:07:07',
+           'updated_at' => '2026-07-03 07:07:07',
+        ]);
     }
 }

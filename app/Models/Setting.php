@@ -6,16 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
+    protected $table = 'settings';
+
     protected $fillable = ['key', 'value'];
 
-    public static function getValue($key, $default = null)
+    /**
+     * Ambil nilai setting
+     */
+    public static function getValue(string $key, $default = null)
     {
-        $setting = static::where('key', $key)->first();
+        $setting = self::where('key', $key)->first();
         return $setting ? $setting->value : $default;
     }
 
-    public static function setValue($key, $value)
+    /**
+     * Simpan/update setting
+     */
+    public static function setValue(string $key, $value)
     {
-        return static::updateOrCreate(['key' => $key], ['value' => $value]);
+        return self::updateOrCreate(
+            ['key' => $key],
+            ['value' => $value]
+        );
     }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     @include('partials.head')
@@ -20,7 +20,7 @@
     </style>
 </head>
 
-<body class="min-h-screen antialiased"
+<body class="min-h-screen antialiased auth-white-text"
     style="background-image: url('{{ asset('img/logo/banner-desktop-hero.png') }}'); background-size: cover; background-position: center; backdrop-filter: blur(4px);">
     <div
         class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
@@ -28,7 +28,7 @@
             <div class=" absolute inset-0"></div>
             <a href="{{ route('login') }}" class="relative z-20 flex items-center text-lg font-medium" wire:navigate>
                 <img src="{{ asset('img/logo/simkopdes-white.png') }}" alt="Logo"
-                    class="fill-current text-black dark:text-white" style="width: 80%; height: auto;" />
+                    class="fill-current text-white" style="width: 80%; height: auto;" />
             </a>
 
             @php
@@ -49,7 +49,7 @@
                 <a href="{{ route('login') }}" class="z-20 flex flex-col items-center gap-2 font-medium lg:hidden"
                     wire:navigate>
                     <span class="flex h-9 w-9 items-center justify-center rounded-md">
-                        <x-app-logo-icon class="size-9 fill-current text-black dark:text-white" />
+                        <x-app-logo-icon class="size-9 fill-current text-white" />
                     </span>
 
                     <span class="sr-only">{{ config('app.name', 'Simkopdes') }}</span>

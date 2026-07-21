@@ -1,4 +1,4 @@
-<div class="space-y-4">
+<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })" class="space-y-4">
     <div class="flex justify-between items-center">
         <div>
             <flux:heading size="xl">Riwayat Transaksi</flux:heading>
@@ -65,9 +65,8 @@
                 <flux:table.columns sticky>
                     <flux:table.column>ID Pesanan</flux:table.column>
                     <flux:table.column>Pelanggan</flux:table.column>
-                    <flux:table.column>Anggota</flux:table.column>
-                    <flux:table.column>Metode</flux:table.column>
-                    <flux:table.column class="text-center">Item</flux:table.column>
+                    <flux:table.column align="center">Metode</flux:table.column>
+                    <flux:table.column align="center">Item</flux:table.column>
                     <flux:table.column align="center">Total</flux:table.column>
                     <flux:table.column align="center">Status</flux:table.column>
                     <flux:table.column>Tanggal</flux:table.column>
@@ -77,22 +76,21 @@
                 <flux:table.rows>
                     @forelse ($orders as $order)
                         <flux:table.row wire:key="order-{{ $order->id }}">
-                            <flux:table.cell class="font-mono font-semibold">
+                            <flux:table.cell class="font-mono font-semibold py-2">
                                 {{ $order->order_id ?? $order->id }}
                             </flux:table.cell>
                             <flux:table.cell>
-                                {{ $order->customer_name ?: 'Tanpa Nama' }}
+                                {{ $order->nama_pelanggan ?: 'Tanpa Nama' }}
                             </flux:table.cell>
-                            <flux:table.cell>
-                                {{ $order->nama_anggota ?? '-' }}
+                            <flux:table.cell align="center">
+                                <flux:badge size="sm" color="{{ $order->payment_method === 'tunai' ? 'green' : 'purple' }}">
+                                    {{ $order->payment_method === 'tunai' ? 'Cash' : 'QRIS' }}
+                                </flux:badge>
                             </flux:table.cell>
-                            <flux:table.cell>
-                                {{ ucfirst($order->payment_method) }}
-                            </flux:table.cell>
-                            <flux:table.cell class="text-center">
+                            <flux:table.cell align="center">
                                 {{ $order->total_items }} item
                             </flux:table.cell>
-                            <flux:table.cell align="end">
+                            <flux:table.cell align="center">
                                 <span class="font-bold">{{ $order->total_rupiah }}</span>
                             </flux:table.cell>
                             <flux:table.cell align="center">
@@ -152,11 +150,7 @@
                     </div>
                     <div>
                         <p class="text-xs text-zinc-500">Pelanggan</p>
-                        <p class="font-semibold">{{ $selectedOrder->customer_name ?: '-' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-zinc-500">Anggota</p>
-                        <p class="font-semibold">{{ $selectedOrder->nama_anggota ?: '-' }}</p>
+                        <p class="font-semibold">{{ $selectedOrder->nama_pelangganngga ?: '-' }}</p>
                     </div>
                     <div>
                         <p class="text-xs text-zinc-500">Status</p>
