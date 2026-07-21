@@ -7,7 +7,7 @@ namespace Midtrans;
 
 require_once dirname(__FILE__) . '/../../Midtrans.php';
 
-Config::$serverKey = 'SB-Mid-server-vAG8V73q0dlg1oWESZBFjInx';
+Config::$serverKey = 'Mid-server-j8zX7BphWKLqS2mLD_QmvcNk';
 // Uncomment for append and override notification URL
 // Config::$appendNotifUrl = "https://example.com";
 // Config::$overrideNotifUrl = "https://example.com";
@@ -112,7 +112,7 @@ function printExampleWarningMessage()
         echo "In file: " . __FILE__;
         echo "<br>";
         echo "<br>";
-        echo htmlspecialchars('Config::$serverKey = \'SB-Mid-server-vAG8V73q0dlg1oWESZBFjInx\';');
+        echo htmlspecialchars('Config::$serverKey = \'Mid-server-j8zX7BphWKLqS2mLD_QmvcNk\';');
         die();
     }
 }

@@ -58,7 +58,7 @@ require_once dirname(__FILE__) . '/pathofproject/Midtrans.php';
 
 ```php
 // Set your Merchant Server Key
-\Midtrans\Config::$serverKey = 'SB-Mid-server-vAG8V73q0dlg1oWESZBFjInx';
+\Midtrans\Config::$serverKey = 'Mid-server-j8zX7BphWKLqS2mLD_QmvcNk';
 // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
 \Midtrans\Config::$isProduction = false;
 // Set sanitization on (default)
@@ -206,7 +206,7 @@ You can see some Core API examples [here](examples/core-api).
 #### Set Client Key
 
 ```javascript
-MidtransNew3ds.clientKey = "SB-Mid-client-QTXEzcHTJrUtvJYW";
+MidtransNew3ds.clientKey = "Mid-client-Ad7gHXF-3QtBXZ6V";
 ```
 
 #### Checkout Page
