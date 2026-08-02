@@ -2,10 +2,13 @@
 
 use App\Http\Controllers\{
     AnggotaController,
+    AdminMenuController,
     DashboardController,
     GudangController,
-    KategoriController,
-    MidtransCallbackController,
+    KategoriController, 
+    MenuAdminController,
+    MenuController,
+    MidtransCallbackController, 
     PinjamanController,
     ProfileController,
     RiwayatTransaksiController,
@@ -29,8 +32,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Resource CRUD untuk admin
         Route::resource('stok-barang', StokBarangController::class);
+        Route::resource('menu', AdminMenuController::class);
         Route::resource('kategori', KategoriController::class);
         Route::resource('gudang', GudangController::class);
+
+        // Restoran
+        Route::get('/menu', [AdminMenuController::class, 'index'])->name('menu.index');
 
         // Users (hanya index & update role)
         Route::get('users', [UserController::class, 'index'])->name('users.index');
@@ -61,8 +68,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Admin Kasir (jika diperlukan)
         Route::get('kasir', fn() => view('pages.admin.kasir.index'))->name('adminKasir');
 
-        // struk
-        Route::get('/struk/{orderId}/pdf', [StrukController::class, 'pdf'])->name('struk.pdf');
     });
 
     // ========== RUTE KASIR ==========
@@ -73,16 +78,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('stok-barang', [StokBarangKsrController::class, 'index'])->name('stok-barang.kasir.index');
         Route::get('stok-barang/{stokBarang}', [StokBarangKsrController::class, 'show'])->name('stok-barang.kasir.show');
 
+        Route::resource('menu', MenuController::class);
+        Route::get('/menu', [MenuController::class, 'index'])->name('menu.kasir.index');
+
         // Riwayat Transaksi
         Route::get('riwayat-transaksi', [RiwayatTransaksiKsrController::class, 'index'])->name('riwayat-transaksi.kasir.index');
         Route::get('riwayat-transaksi/cetak', [RiwayatTransaksiKsrController::class, 'cetak'])->name('riwayat-transaksi.kasir.cetak');
-
-        // struk
-        Route::get('/struk/{orderId}/pdf', [StrukController::class, 'pdf'])->name('struk.pdf');
     });
 
     // Rute umum
     Route::post('/midtrans/callback', [MidtransCallbackController::class, 'handle'])->name('midtrans.callback');
+
+    // struk
+        Route::get('/struk/{orderId}/pdf', [StrukController::class, 'pdf'])->name('struk.pdf');
 });
 
 require __DIR__ . '/settings.php';

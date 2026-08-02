@@ -7,14 +7,11 @@
         </div>
     </div>
     {{-- Pencarian --}}
-    <div class="flex gap-2">
-        <div class="flex flex-col sm:flex-row gap-2">
-            <div class="flex-1">
-                <flux:input icon="magnifying-glass" wire:model.live.debounce.100ms="search"
-                    placeholder="Cari gudang..." />
-            </div>
-            <flux:button variant="primary" color="blue" icon="plus" wire:click="openCreate">Tambah Gudang</flux:button>
+    <div class="flex flex-col sm:flex-row gap-2">
+        <div class="flex-1">
+            <flux:input icon="magnifying-glass" wire:model.live.debounce.100ms="search" placeholder="Cari gudang..." />
         </div>
+        <flux:button variant="primary" color="blue" icon="plus" wire:click="openCreate">Tambah Gudang</flux:button>
     </div>
 
     {{-- Tabel Gudang --}}

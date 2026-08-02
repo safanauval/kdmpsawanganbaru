@@ -20,6 +20,7 @@ class Kasir extends Component
     public $paymentAmount = 0;
     public $change = 0;
     public $snapToken;
+    public $menuType = 'toko';
     public $kodeAnggota = '';
     public $showReceiptModal = false;
     public $lastOrder = null;
@@ -55,17 +56,53 @@ class Kasir extends Component
 
     public function getFilteredProductsProperty()
     {
+        // 1. JIKA PILIH MENU RESTO (Tabel menu_tab)
+        if ($this->menuType === 'resto') {
+            return DB::table('menu') // Dipastikan menggunakan tabel menu_tab
+                ->when($this->search, function ($q) {
+                    $q->where(function ($sub) {
+                        $sub->where('nama_menu', 'like', '%' . $this->search . '%')
+                            ->orWhere('kode_menu', 'like', '%' . $this->search . '%');
+                    });
+                })
+                ->get()
+                ->map(function ($item) {
+                    // Konversi binary BLOB menjadi Base64 Data URL
+                    $gambarUrl = null;
+                    if (!empty($item->gambar)) {
+                        $gambarUrl = 'data:image/jpeg;base64,' . base64_encode($item->gambar);
+                    }
+
+                    return (object) [
+                        'id'             => $item->id,
+                        'nama_barang'    => $item->nama_menu ?? $item->nama_barang ?? 'Menu Resto',
+                        'harga_jual'     => $item->harga ?? $item->harga_jual ?? 0,
+                        'stok'           => $item->stok ?? 999,
+                        'gambar_url'     => $gambarUrl, // <-- Sudah menjadi Base64 string yang siap dirender <img src="...">
+                        'estimasi_waktu' => $item->estimasi_waktu ?? 15,
+                        'is_resto'       => true,
+                    ];
+                });
+        }
+
+        // 2. JIKA PILIH MENU TOKO (Tabel stok_barang)
         return StokBarang::query()
             ->with('kategori')
             ->when($this->search, function ($q) {
-                $q->where('nama_barang', 'like', '%' . $this->search . '%')
-                    ->orWhere('kode_barang', 'like', '%' . $this->search . '%');
+                $q->where(function ($sub) {
+                    $sub->where('nama_barang', 'like', '%' . $this->search . '%')
+                        ->orWhere('kode_barang', 'like', '%' . $this->search . '%');
+                });
             })
             ->when($this->selectedCategory, function ($q) {
                 $q->where('kategori_id', $this->selectedCategory);
             })
             ->orderBy('nama_barang')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->is_resto = false;
+                return $item;
+            });
     }
 
     public function getCategoriesProperty()
@@ -82,42 +119,80 @@ class Kasir extends Component
 
     public function addToCart($productId)
     {
-        $product = StokBarang::findOrFail($productId);
-        if ($product->stok <= 0) {
-            $this->dispatch('notify', 'Stok habis.', 'error');
-            return;
+        if ($this->menuType === 'resto') {
+            // 1. Data dari tabel Menu Resto (menu_tab)
+            $product = DB::table('menu')->where('id', $productId)->first();
+            if (!$product) {
+                $this->dispatch('notify', 'Menu resto tidak ditemukan.', 'error');
+                return;
+            }
+
+            if (($product->stok) <= 0) {
+                $this->dispatch('notify', 'Porsi resto habis.', 'error');
+                return;
+            }
+
+            // --- KONVERSI GAMBAR BLOB KE BASE64 DATA URL UNTUK CART ---
+            $imageUrl = null;
+            if (!empty($product->gambar)) {
+                $imageUrl = 'data:image/jpeg;base64,' . base64_encode($product->gambar);
+            }
+
+            $cartId   = 'resto_' . $product->id;
+            $name     = $product->nama_menu;
+            $price    = $product->harga;
+            $stock    = $product->stok ?? 999;
+            $isResto  = true;
+            $estimasi = $product->estimasi_waktu ?? 15;
+        } else {
+            // 2. Data dari tabel Stok Barang Toko (stok_barang)
+            $product = StokBarang::findOrFail($productId);
+            if ($product->stok <= 0) {
+                $this->dispatch('notify', 'Stok habis.', 'error');
+                return;
+            }
+
+            $cartId   = 'toko_' . $product->id;
+            $name     = $product->nama_barang;
+            $price    = $product->harga_jual;
+            $stock    = $product->stok;
+            $imageUrl = $product->gambar_url; // Sudah dalam bentuk URL/Base64 dari model
+            $isResto  = false;
+            $estimasi = 0;
         }
 
-        $existing = collect($this->cart)->firstWhere('id', $productId);
+        $existing = collect($this->cart)->firstWhere('id', $cartId);
         if ($existing) {
-            $this->updateQuantity($productId, $existing['quantity'] + 1);
+            $this->updateQuantity($cartId, $existing['quantity'] + 1);
             return;
         }
 
         $this->cart[] = [
-            'id'        => $product->id,
-            'name'      => $product->nama_barang,
-            'price'     => $product->harga_jual,
-            'quantity'  => 1,
-            'image_url' => $product->gambar_url,
-            'stock'     => $product->stok,
-            'max_qty'   => $product->stok,
+            'id'             => $cartId,
+            'original_id'    => $productId,
+            'name'           => $name,
+            'price'          => $price,
+            'quantity'       => 1,
+            'image_url'      => $imageUrl, // <-- Gambar di keranjang sekarang sudah valid Data URL
+            'stock'          => $stock,
+            'max_qty'        => $stock,
+            'is_resto'       => $isResto,
+            'estimasi_waktu' => $estimasi,
         ];
 
         $this->saveCartToSession();
     }
 
-    public function updateQuantity($productId, $quantity)
+    public function updateQuantity($cartId, $quantity)
     {
         if ($quantity < 1) {
-            $this->removeFromCart($productId);
+            $this->removeFromCart($cartId);
             return;
         }
 
-        $this->cart = collect($this->cart)->map(function ($item) use ($productId, $quantity) {
-            if ($item['id'] == $productId) {
-                $product = StokBarang::find($productId);
-                if ($product && $quantity > $product->stok) {
+        $this->cart = collect($this->cart)->map(function ($item) use ($cartId, $quantity) {
+            if ($item['id'] == $cartId) {
+                if ($quantity > $item['stock']) {
                     $this->dispatch('notify', 'Stok tidak mencukupi.', 'error');
                     return $item;
                 }
@@ -129,9 +204,9 @@ class Kasir extends Component
         $this->saveCartToSession();
     }
 
-    public function removeFromCart($productId)
+    public function removeFromCart($cartId)
     {
-        $this->cart = collect($this->cart)->reject(fn($item) => $item['id'] == $productId)->toArray();
+        $this->cart = collect($this->cart)->reject(fn($item) => $item['id'] == $cartId)->toArray();
         $this->saveCartToSession();
     }
 
@@ -149,6 +224,25 @@ class Kasir extends Component
         $discountPercent = $this->id_anggota ? $this->memberDiscountPercent : $this->nonMemberDiscountPercent;
         $this->discountAmount = $subtotal * $discountPercent / 100;
         return max(0, $subtotal - $this->discountAmount);
+    }
+
+    // ========== GENERASI NOMOR ANTRIAN RESTO ==========
+
+    private function generateNoAntrian()
+    {
+        // Cek apakah di keranjang terdapat minimal 1 menu resto
+        $hasRestoItem = collect($this->cart)->contains('is_resto', true);
+        if (!$hasRestoItem) {
+            return null; // Tidak perlu nomor antrian jika hanya belanja barang toko
+        }
+
+        // Ambil transaksi hari ini yang memiliki nomor antrian
+        $todayCount = Order::whereDate('created_at', now()->today())
+            ->whereNotNull('no_antrian')
+            ->count();
+
+        $nextNumber = $todayCount + 1;
+        return 'A-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT); // Format: A-001, A-002, dst.
     }
 
     // ========== MODAL PEMBAYARAN ==========
@@ -205,14 +299,17 @@ class Kasir extends Component
             'id_anggota'    => 'nullable|exists:anggota,id_anggota',
         ]);
 
+        $noAntrian = $this->generateNoAntrian();
+
         // ========== PEMBAYARAN TUNAI ==========
         if ($this->paymentMethod === 'tunai') {
             $this->validate(['paymentAmount' => 'required|numeric|min:' . $this->total]);
 
             $order = null;
-            DB::transaction(function () use (&$order) {
+            DB::transaction(function () use (&$order, $noAntrian) {
                 $order = Order::create([
                     'order_id'        => 'KPDES-CASH-' . time(),
+                    'no_antrian'      => $noAntrian,
                     'user_id'         => auth()->id(),
                     'user_name'       => auth()->user()->name ?? null,
                     'id_anggota'      => $this->id_anggota,
@@ -277,6 +374,7 @@ class Kasir extends Component
 
             Order::create([
                 'order_id'        => $orderId,
+                'no_antrian'      => $noAntrian,
                 'user_id'         => auth()->id(),
                 'user_name'       => auth()->user()->name ?? null,
                 'id_anggota'      => $this->id_anggota,
@@ -349,9 +447,17 @@ class Kasir extends Component
     private function reduceStock(array $cartItems): void
     {
         foreach ($cartItems as $item) {
-            $product = StokBarang::find($item['id']);
-            if ($product) {
-                $product->decrement('stok', $item['quantity']);
+            $originalId = $item['original_id'] ?? $item['id'];
+
+            if (!empty($item['is_resto'])) {
+                // Potong stok porsi di tabel menu (Menu Resto)
+                DB::table('menu')->where('id', $originalId)->decrement('stok', $item['quantity']);
+            } else {
+                // Potong stok di tabel stok_barang (Toko)
+                $product = StokBarang::find($originalId);
+                if ($product) {
+                    $product->decrement('stok', $item['quantity']);
+                }
             }
         }
     }

@@ -116,6 +116,10 @@
                     :current="request()->routeIs('stok-barang.kasir.index')" wire:navigate>
                     {{ __('Stok Barang') }}
                 </flux:sidebar.item>
+                <flux:sidebar.item icon="cake" :href="route('menu.kasir.index')"
+                    :current="request()->routeIs('menu.*')" wire:navigate>
+                    {{ __('Menu Restoran') }}
+                </flux:sidebar.item>
                 <flux:sidebar.item icon="document-text" :href="route('riwayat-transaksi.kasir.index')"
                     :current="request()->routeIs('riwayat-transaksi.kasir.index')" wire:navigate>
                     {{ __('Riwayat Transaksi') }}

@@ -10,6 +10,7 @@ return new class extends Migration {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_id')->unique();
+            $table->string('no_antrian', 20)->nullable();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('user_name', 50)->nullable();
             $table->unsignedBigInteger('id_anggota')->nullable();

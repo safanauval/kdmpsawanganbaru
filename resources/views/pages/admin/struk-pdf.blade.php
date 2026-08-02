@@ -12,21 +12,23 @@
         }
 
         @page {
-            size: 58mm 80mm;
-            margin: 3mm;
-            padding: 3mm;
-        }
+        /* Lebar diatur 58mm, sedangkan tingginya diset 'auto' agar menyesuaikan isi */
+        size: 80mm auto;
+        
+        /* Margin di-reset ke 0 di @page agar tidak menabrak batas cetak printer thermal */
+        margin: 0;
+    }
 
-        body {
-            font-family: 'Courier New', 'Consolas', monospace;
-            font-size: 8px;
-            line-height: 1.2;
-            width: 56mm;
-            margin: 2mm;
-            padding: 2mm;
-            background: #fff;
-            color: #000;
-        }
+    body {
+        font-family: 'Courier New', 'Consolas', monospace;
+        font-size: 14px;
+        line-height: 1.2;
+        width: 78mm;
+        margin: 2mm auto;
+        padding: 2mm;
+        background: #fff;
+        color: #000;
+    }
 
         /* Text Utilities */
         .text-center {
@@ -42,15 +44,15 @@
         }
 
         .text-xs {
-            font-size: 7px;
+            font-size: 10px;
         }
 
         .text-sm {
-            font-size: 8px;
+            font-size: 12px;
         }
 
         .text-lg {
-            font-size: 12px;
+            font-size: 16px;
         }
 
         .text-gray-500 {
@@ -203,7 +205,15 @@
             <p class="info-row"><strong>Kasir:</strong> {{ auth()->user()->name ?? 'Admin' }}</p>
             <p class="info-row"><strong>Pelanggan:</strong>
                 {{ $order->nama_pelanggan ?? $order->customer_name ?: 'Umum' }}</p>
+            
+            {{-- NOMOR ANTRIAN RESTO --}}
+            @if(!empty($order->no_antrian))
+                <p class="info-row"><strong>No. Antrian:</strong> <span class="font-bold">{{ $order->no_antrian }}</span></p>
+            @endif
             <p class="info-row"><strong>Metode:</strong> {{ ucfirst($order->payment_method) }}</p>
+            @if(!empty($order->no_antrian))
+                <p class="text-xs text-gray-500 text-center mt-1">Mohon tunggu hingga nomor dipanggil</p>
+            @endif
         </div>
 
         {{-- Tabel Item --}}
@@ -219,7 +229,12 @@
             <tbody>
                 @foreach($order->cart_items as $item)
                     <tr>
-                        <td class="py-1">{{ $item['name'] }}</td>
+                        <td class="py-1">
+                            {{ $item['name'] }}
+                            @if(!empty($item['is_resto']))
+                                <span class="text-xs text-gray-500 block">(Resto)</span>
+                            @endif
+                        </td>
                         <td class="text-right py-1">{{ $item['quantity'] }}</td>
                         <td class="text-right py-1">Rp {{ number_format($item['price'], 0, ',', '.') }}</td>
                         <td class="text-right py-1">Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}

@@ -36,7 +36,7 @@ class StokBarangIndex extends Component
             'harga_jual'   => 'required|numeric|min:0',
             'satuan'       => 'required|string|max:50',
             'deskripsi'    => 'nullable|string',
-            'gambar'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gambar'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ];
     }
 

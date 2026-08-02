@@ -1,11 +1,44 @@
 <div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
     x-on:cart-updated.window="$wire.$refresh()" class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1"
     style="padding-top: 20px;">
+    
     <div class="flex-1" style="padding-right: 330px;">
+
+        <!-- ========================================================= -->
+        <!-- SLIDER / TAB SWITCHER (MENU TOKO vs MENU RESTO)           -->
+        <!-- ========================================================= -->
+        <div class="mb-4 p-1">
+            <div class="relative flex w-full max-w-xs rounded-xl bg-zinc-200/80 p-1 dark:bg-zinc-800">
+                <!-- Highlight Background Slider -->
+                <div class="absolute inset-y-1 w-[calc(50%-4px)] rounded-lg bg-white shadow-sm transition-all duration-300 ease-in-out dark:bg-zinc-700"
+                    :class="$wire.menuType === 'toko' ? 'left-1' : 'left-[calc(50%+2px)]'">
+                </div>
+
+                <!-- Tombol Menu Toko -->
+                <button type="button" 
+                    wire:click="$set('menuType', 'toko')"
+                    class="relative z-10 flex flex-1 items-center justify-center gap-2 py-2 text-sm font-semibold transition-colors duration-200"
+                    :class="$wire.menuType === 'toko' ? 'text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-700 dark:text-zinc-400'">
+                    <flux:icon.building-storefront class="w-4 h-4" />
+                    Menu Toko
+                </button>
+
+                <!-- Tombol Menu Resto -->
+                <button type="button" 
+                    wire:click="$set('menuType', 'resto')"
+                    class="relative z-10 flex flex-1 items-center justify-center gap-2 py-2 text-sm font-semibold transition-colors duration-200"
+                    :class="$wire.menuType === 'resto' ? 'text-zinc-900 dark:text-white' : 'text-zinc-500 hover:text-zinc-700 dark:text-zinc-400'">
+                    <flux:icon.cake class="w-4 h-4" />
+                    Menu Resto
+                </button>
+            </div>
+        </div>
+        <!-- ========================================================= -->
+
         <!-- Search & Filter -->
         <div class="flex flex-col sm:flex-row gap-4 p-1 sm:p-1" style="padding-bottom: 20px;">
             <div class="flex-1">
-                <flux:input wire:model.live.debounce.300ms="search" placeholder="Cari produk..." icon="magnifying-glass"
+                <flux:input wire:model.live.debounce.300ms="search" placeholder="Cari produk atau menu..." icon="magnifying-glass"
                     clearable />
             </div>
             <div class="sm:w-50">
@@ -18,11 +51,20 @@
             </div>
         </div>
 
-        <!-- Grid Produk -->
-        <div class="grid gap-4 p-1 gap-4 p-1" style="grid-template-columns: auto auto auto auto;">
+        <!-- Grid Produk (Toko & Resto) -->
+        <div class="grid gap-4 p-1" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
             @foreach($products as $product)
-                <flux:card class="space-y-2" style="cursor: pointer;">
-                    <!-- Gambar -->
+                <flux:card class="space-y-2 relative" style="cursor: pointer;">
+                    
+                    {{-- Badge Estimasi Waktu Khusus Menu Resto --}}
+                    @if(!empty($product->is_resto) && isset($product->estimasi_waktu))
+                        <div style="padding: 2px;" class="absolute top-2 right-2 rounded-full bg-white text-black text-[10px] font-bold flex items-center shadow p-4">
+                            <flux:icon.clock class="w-3 h-3" />
+                            <span>~{{ $product->estimasi_waktu }} mnt</span>
+                        </div>
+                    @endif
+
+                    <!-- Gambar Produk / Menu -->
                     <div wire:click="addToCart({{ $product->id }})"
                         class="flex items-center justify-center w-full h-32 rounded-lg bg-white dark:bg-zinc-700">
                         @if($product->gambar_url)
@@ -32,26 +74,36 @@
                             <flux:icon.photo style="width: 140px; height: 140px; object-fit: cover;"></flux:icon.photo>
                         @endif
                     </div>
+
+                    <!-- Nama Barang / Menu -->
                     <flux:text class="text-lg text-center gap-4" variant="strong">{{ $product->nama_barang }}</flux:text>
+                    
+                    <!-- Informasi Stok & Harga -->
                     <div class="flex justify-between gap-2 lg-2">
-                        <flux:text class="text-sm dark:text-zinc-400">Stok: {{ $product->stok }}</flux:text>
+                        <flux:text class="text-sm dark:text-zinc-400">
+                            {{ !empty($product->is_resto) ? 'Porsi:' : 'Stok:' }} {{ $product->stok }}
+                        </flux:text>
                         <flux:text class="text-sm font-bold text-green-600 dark:text-green-400">Rp
                             {{ number_format($product->harga_jual, 0, ',', '.') }}
                         </flux:text>
                     </div>
 
+                    <!-- Tombol Tambah Ke Keranjang / Kontrol Qty -->
                     @if($product->stok > 0)
                         <div class="mt-auto pt-2 w-full">
                             @php
-                                $cartItem = collect($cart)->firstWhere('id', $product->id);
+                                // Mengidentifikasi ID unik keranjang (berdasarkan tipe produk)
+                                $cartId = (!empty($product->is_resto) ? 'resto_' : 'toko_') . $product->id;
+                                $cartItem = collect($cart)->firstWhere('id', $cartId);
                                 $qty = $cartItem['quantity'] ?? 0;
                             @endphp
+
                             @if($qty > 0)
                                 <div class="flex items-center justify-between">
-                                    <flux:button wire:click="updateQuantity({{ $product->id }}, {{ $qty - 1 }})" size="sm"
+                                    <flux:button wire:click="updateQuantity('{{ $cartId }}', {{ $qty - 1 }})" size="sm"
                                         icon="minus" variant="danger" />
                                     <span class="font-bold">{{ $qty }}</span>
-                                    <flux:button wire:click="updateQuantity({{ $product->id }}, {{ $qty + 1 }})" size="sm"
+                                    <flux:button wire:click="updateQuantity('{{ $cartId }}', {{ $qty + 1 }})" size="sm"
                                         icon="plus" variant="primary" :disabled="$product->stok <= $qty" />
                                 </div>
                             @else
@@ -65,14 +117,18 @@
                 </flux:card>
             @endforeach
         </div>
+
         @if($products->isEmpty())
-            <div class="text-center py-10 text-zinc-500">Produk tidak ditemukan.</div>
+            <div class="text-center py-10 text-zinc-500">
+                {{ $menuType === 'resto' ? 'Menu restoran tidak ditemukan.' : 'Produk toko tidak ditemukan.' }}
+            </div>
         @endif
     </div>
 
     {{-- PANEL KERANJANG FIXED --}}
-    <div class="fixed bottom-0 right-0 w-[340px] bg-white dark:bg-zinc-800 z-50 flex flex-col border-l border-zinc-200 dark:border-zinc-700"
-        style="height: 90%; padding-top: 10px; padding-right: 20px;">
+    <div class="fixed bottom-0 right-0 h-full w-[340px] bg-white dark:bg-zinc-800 z-50 flex flex-col border-l border-zinc-200 dark:border-zinc-700"
+        style="height: 90%; padding-top: 60px; padding-right: 20px;">
+        
         <!-- Header Keranjang -->
         <div class="flex justify-between items-center p-4 border-b border-zinc-200 dark:border-zinc-700">
             <h2 class="text-sm flex items-center gap-2" variant="strong">
@@ -84,33 +140,41 @@
                     <flux:button wire:click="clearCart" size="xs" variant="ghost" class="text-red-500">Kosongkan
                     </flux:button>
                 @endif
-                <flux:button @click="$gtore.cart.open = false" variant="ghost" size="xs" icon="x-mark" />
+                <flux:button @click="$store.cart.open = false" variant="ghost" size="xs" icon="x-mark" />
             </div>
         </div>
+
         <!-- Daftar Item Dalam Keranjang -->
         <div class="flex-1 overflow-y-auto space-y-2 p-2">
             @forelse($cart as $item)
                 <div class="flex items-center justify-between gap-3 p-2 mt-1 rounded-lg bg-zinc-50 dark:bg-zinc-700"
                     style="width: 300px;">
                     <img src="{{ $item['image_url'] ?? asset('img/placeholder.svg') }}" class="rounded-lg"
-                        style="object-cover; width: 50px; height: 50px; " alt="{{ $item['name'] }}">
+                        style="object-fit: cover; width: 50px; height: 50px;" alt="{{ $item['name'] }}">
                     <div class="flex-1 item-center justify-between gap-2">
-                        <div class="flex justify-between p-2">
-                            <flux:text class="text-sm font-bold">{{ $item['name'] }}</flux:text>
+                        <div class="flex justify-between p-1 items-start">
+                            <div>
+                                <flux:text class="text-sm font-bold">{{ $item['name'] }}</flux:text>
+                                @if(!empty($item['is_resto']))
+                                    <span class="inline-block bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.2 rounded font-medium">Resto (~{{ $item['estimasi_waktu'] ?? 15 }}m)</span>
+                                @else
+                                    <span class="inline-block bg-blue-100 text-blue-800 text-[9px] px-1.5 py-0.2 rounded font-medium">Toko</span>
+                                @endif
+                            </div>
                             <flux:text class="text-sm" variant="strong">Rp
                                 {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}
                             </flux:text>
                         </div>
                         <div class="flex justify-between items-center gap-2 p-1">
                             <div class="flex gap-4 justify-content-center">
-                                <flux:button wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] - 1 }})"
+                                <flux:button wire:click="updateQuantity('{{ $item['id'] }}', {{ $item['quantity'] - 1 }})"
                                     size="xs" icon="minus" variant="filled" />
                                 <flux:text class="text-sm font-bold mx-2">{{ $item['quantity'] }}</flux:text>
-                                <flux:button wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] + 1 }})"
+                                <flux:button wire:click="updateQuantity('{{ $item['id'] }}', {{ $item['quantity'] + 1 }})"
                                     size="xs" icon="plus" variant="filled"
                                     :disabled="$item['quantity'] >= $item['stock']" />
                             </div>
-                            <flux:button wire:click="removeFromCart({{ $item['id'] }})" size="xs" variant="subtle"
+                            <flux:button wire:click="removeFromCart('{{ $item['id'] }}')" size="xs" variant="subtle"
                                 class="justify-end mt-1">
                                 <flux:icon.trash class="w-4 h-4" color="red" />
                             </flux:button>
@@ -157,7 +221,7 @@
         </div>
     </div>
 
-    <!-- Modal Pembayaran (tidak berubah) -->
+    <!-- Modal Pembayaran -->
     <flux:modal wire:model="showPaymentModal" title="Pembayaran" class="max-w-md" style="width: 800px; height: 550px;">
         <div class="space-y-4 p-6">
             <div class="bg-zinc-100 dark:bg-zinc-700 p-3 rounded">
@@ -187,10 +251,10 @@
             {{-- Nama Pelanggan --}}
             <flux:field>
                 <flux:label>Nama Pelanggan</flux:label>
-                <flux:input wire:model="namaPelanggan" placeholder="Nama pelanggan" />
+                <flux:input wire:model.live="namaPelanggan" placeholder="Nama pelanggan" />
             </flux:field>
 
-            {{-- Pilihan metode pembayaran dengan Tabs --}}
+            {{-- Pilihan metode pembayaran --}}
             <flux:field>
                 <flux:label>Metode Pembayaran</flux:label>
                 <flux:radio.group variant="segmented" wire:model.live="paymentMethod">
@@ -217,14 +281,12 @@
                 </div>
             @elseif($paymentMethod === 'non-tunai')
                 <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded">
-                    <p class="text-sm text-yellow-800">Pilih "Proses Pembayaran" untuk melanjutkan ke pembayaran QRIS /
-                        Transfer.</p>
+                    <p class="text-sm text-yellow-800">Pilih "Proses Pembayaran" untuk melanjutkan ke pembayaran QRIS / Transfer.</p>
                 </div>
             @endif
 
             <div class="flex gap-2 justify-between mt-4">
-                <flux:button wire:click="closePaymentModal" color="red" variant="danger" style="width: 50%;">Batal
-                </flux:button>
+                <flux:button wire:click="closePaymentModal" color="red" variant="danger" style="width: 50%;">Batal</flux:button>
                 <flux:button wire:click="processPayment" color="blue" variant="primary" style="width: 50%;"
                     :disabled="$paymentMethod === 'tunai' && $paymentAmount < $this->total">
                     Proses Pembayaran
@@ -251,9 +313,15 @@
                 <div class="mb-2">
                     <p><strong>No. Order:</strong> {{ $lastOrder->order_id }}</p>
                     <p><strong>Kasir:</strong> {{ auth()->user()->name ?? 'Admin' }}</p>
-                    <p><strong>Pelanggan:</strong> {{ $lastOrder->nama_pelanggan ?? $lastOrder->customer_name ?: 'Umum' }}
-                    </p>
+                    <p><strong>Pelanggan:</strong> {{ $lastOrder->nama_pelanggan ?? $lastOrder->customer_name ?: 'Umum' }}</p>
+                    {{-- NOMOR ANTRIAN RESTO (Hanya muncul jika ada transaksi menu resto) --}}
+                    @if(!empty($lastOrder->no_antrian))
+                        <p><strong>Nomor Antrian:</strong> {{ $lastOrder->no_antrian }}</p1>
+                    @endif
                     <p><strong>Metode:</strong> {{ ucfirst($lastOrder->payment_method) }}</p>
+                    @if(!empty($lastOrder->no_antrian))
+                        <p class="text-[10px] text-gray-500">Mohon tunggu hingga nomor dipanggil</p>
+                    @endif
                 </div>
 
                 {{-- Tabel Item --}}
@@ -269,11 +337,15 @@
                     <tbody>
                         @foreach($lastOrder->cart_items as $item)
                             <tr>
-                                <td class="py-1">{{ $item['name'] }}</td>
+                                <td class="py-1">
+                                    {{ $item['name'] }}
+                                    @if(!empty($item['is_resto']))
+                                        <span class="text-[9px] block text-gray-500">(Resto)</span>
+                                    @endif
+                                </td>
                                 <td class="text-right">{{ $item['quantity'] }}</td>
                                 <td class="text-right">Rp {{ number_format($item['price'], 0, ',', '.') }}</td>
-                                <td class="text-right">Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}
-                                </td>
+                                <td class="text-right">Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -332,33 +404,34 @@
             </div>
         @endif
     </flux:modal>
-    @push('scripts')
-        {{-- Midtrans Snap --}}
-        <script
-            src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
-            data-client-key="{{ config('services.midtrans.client_key') }}">
-            </script>
+</div>
 
-        {{-- Midtrans Handler --}}
-        <script>
-            document.addEventListener('livewire:init', () => {
-                Livewire.on('open-snap', (event) => {
-                    const snapToken = event.snapToken;
-                    if (!snapToken) {
-                        alert('Gagal mendapatkan token pembayaran.');
-                        return;
-                    }
-                    if (typeof window.snap !== 'undefined' && typeof window.snap.pay === 'function') {
-                        window.snap.pay(snapToken, {
-                            onSuccess: function (result) { @this.call('handlePaymentSuccess', result); },
-                            onPending: function (result) { @this.call('handlePaymentPending', result); },
-                            onError: function (result) { @this.call('handlePaymentError', result); },
-                            onClose: function () { @this.call('handlePaymentClose'); }
-                        });
-                    } else {
-                        alert('Midtrans Snap belum dimuat.');
-                    }
+@push('scripts')
+{{-- Midtrans Snap --}}
+<script src="{{ config('services.midtrans.is_production') ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" 
+    data-client-key="{{ config('services.midtrans.client_key') }}">
+</script>
+
+{{-- Midtrans Handler --}}
+<script>
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('open-snap', (event) => {
+            const snapToken = event.snapToken;
+            if (!snapToken) {
+                alert('Gagal mendapatkan token pembayaran.');
+                return;
+            }
+            if (typeof window.snap !== 'undefined' && typeof window.snap.pay === 'function') {
+                window.snap.pay(snapToken, {
+                    onSuccess: function (result) { @this.call('handlePaymentSuccess', result); },
+                    onPending: function (result) { @this.call('handlePaymentPending', result); },
+                    onError: function (result) { @this.call('handlePaymentError', result); },
+                    onClose: function () { @this.call('handlePaymentClose'); }
                 });
-            });
-        </script>
-    @endpush
+            } else {
+                alert('Midtrans Snap belum dimuat.');
+            }
+        });
+    });
+</script>
+@endpush

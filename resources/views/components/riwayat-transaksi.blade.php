@@ -1,15 +1,13 @@
-<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })"
-    class="space-y-4">
-    <div class="flex justify-between items-center">
+<div x-data x-on:notify.window="Flux.toast({ text: $event.detail[0], variant: $event.detail[1] ?? 'success' })" class="space-y-4">
+    <div class="flex h-full w-full flex-1 flex-col gap-2 rounded-xl sm:p-1">
         <div>
             <flux:heading size="xl">Riwayat Transaksi</flux:heading>
             <p class="mt-3 text-gray-600 dark:text-gray-400">Daftar transaksi, status, dan data pelanggan</p>
         </div>
     </div>
     {{-- Filter & Pencarian --}}
-    <div class="space-y-2">
-        <div class="flex flex-col sm:flex-row gap-2">
-            <div class="flex-1" style="padding-top: 24px;">
+    <div class="flex flex-col sm:flex-row gap-2">
+         <div class="flex-1" style="padding-top: 24px;">
                 <flux:input wire:model.live.debounce.100ms="search" placeholder="Cari Order ID / Nama Pelanggan"
                     icon="magnifying-glass" clearable />
             </div>
@@ -29,7 +27,6 @@
                 <flux:label>Sampai Tanggal</flux:label>
                 <flux:input type="date" wire:model.live="dateTo" />
             </div>
-        </div>
     </div>
 
     {{-- Ringkasan --}}

@@ -136,6 +136,10 @@
                     :current="request()->routeIs('kategori.*')" wire:navigate>
                     {{ __('Kategori') }}
                 </flux:sidebar.item>
+                <flux:sidebar.item icon="cake" :href="route('menu.index')"
+                    :current="request()->routeIs('menu.*')" wire:navigate>
+                    {{ __('Menu Restoran') }}
+                </flux:sidebar.item>
                 <flux:sidebar.item icon="archive-box" :href="route('stok-barang.index')"
                     :current="request()->routeIs('stok-barang.*')" wire:navigate>
                     {{ __('Stok Barang') }}
