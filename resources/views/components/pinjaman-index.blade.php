@@ -14,7 +14,7 @@
     </div>
 
     {{-- Filter & Pencarian --}}
-    <div class="flex flex-col sm:flex-row gap-2">
+    <div class="flex flex-col sm:flex-row gap-3">
         <div class="flex-1" style="padding-top: 24px;">
             <flux:input wire:model.live.debounce.100ms="search" placeholder="Cari kode / nama anggota..." />
         </div>

@@ -109,7 +109,7 @@
     <flux:sidebar sticky collapsible="mobile"
         class="border-r border-black-200 bg-black-900 dark:border-zinc-700 dark:bg-zinc-900">
 
-        <flux:sidebar.nav scrollable style="padding-bottom: 20px; height: calc(100% - 55px);" class="overflow-y-hidden">
+        <flux:sidebar.nav scrollable style="padding-bottom: 20px; height: calc(100% - 55px);" class="overflow-y-auto">
             {{-- Grup Platform --}}
             <flux:sidebar.group :heading="__('Overview')" class="grid">
                 <flux:sidebar.item icon="presentation-chart-bar" :href="route('dashboard')"
