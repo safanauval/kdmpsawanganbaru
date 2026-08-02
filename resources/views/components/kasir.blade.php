@@ -7,7 +7,7 @@
         <!-- ========================================================= -->
         <!-- SLIDER / TAB SWITCHER (MENU TOKO vs MENU RESTO)           -->
         <!-- ========================================================= -->
-        <div class="mb-4 p-1">
+        <div class="mb-4 p-1 flex justify-center items-center">
             <div class="relative flex w-full max-w-xs rounded-xl bg-zinc-200/80 p-1 dark:bg-zinc-800">
                 <!-- Highlight Background Slider -->
                 <div class="absolute inset-y-1 w-[calc(50%-4px)] rounded-lg bg-white shadow-sm transition-all duration-300 ease-in-out dark:bg-zinc-700"
@@ -52,7 +52,7 @@
         </div>
 
         <!-- Grid Produk (Toko & Resto) -->
-        <div class="grid gap-4 p-1" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+        <div class="grid gap-4 p-1" style="grid-template-columns: auto auto auto auto; padding-bottom: 20px;">
             @foreach($products as $product)
                 <flux:card class="space-y-2 relative" style="cursor: pointer;">
                     
@@ -127,7 +127,7 @@
 
     {{-- PANEL KERANJANG FIXED --}}
     <div class="fixed bottom-0 right-0 h-full w-[340px] bg-white dark:bg-zinc-800 z-50 flex flex-col border-l border-zinc-200 dark:border-zinc-700"
-        style="height: 90%; padding-top: 60px; padding-right: 20px;">
+        style="height: 90%; padding-top: 20px; padding-right: 20px;">
         
         <!-- Header Keranjang -->
         <div class="flex justify-between items-center p-4 border-b border-zinc-200 dark:border-zinc-700">
