@@ -8,6 +8,7 @@ use App\Models\StokBarang;
 use App\Models\Anggota;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Kasir extends Component
 {
@@ -113,6 +114,38 @@ class Kasir extends Component
     public function getAnggotaListProperty()
     {
         return Anggota::orderBy('nama_anggota')->get();
+    }
+
+    private function hasOrderColumn(string $column): bool
+    {
+        return Schema::hasColumn('orders', $column);
+    }
+
+    private function buildOrderPayload(string $orderId, string $paymentMethod, ?string $noAntrian, ?string $snapToken = null): array
+    {
+        $payload = [
+            'order_id'        => $orderId,
+            'user_id'         => auth()->id(),
+            'user_name'       => auth()->user()->name ?? null,
+            'id_anggota'      => $this->id_anggota,
+            'nama_pelanggan'  => $this->namaPelanggan ?: 'Umum',
+            'total'           => $this->total,
+            'discount_amount' => $this->discountAmount,
+            'payment_method'  => $paymentMethod,
+            'payment_status'  => $paymentMethod === 'tunai' ? 'paid' : 'pending',
+            'payment_amount'  => $this->paymentAmount,
+            'cart_items'      => $this->cart,
+        ];
+
+        if ($this->hasOrderColumn('no_antrian') && $noAntrian !== null) {
+            $payload['no_antrian'] = $noAntrian;
+        }
+
+        if ($this->hasOrderColumn('snap_token') && $snapToken !== null) {
+            $payload['snap_token'] = $snapToken;
+        }
+
+        return array_filter($payload, fn ($value) => $value !== null);
     }
 
     // ========== KERANJANG & DISKON ==========
@@ -230,6 +263,10 @@ class Kasir extends Component
 
     private function generateNoAntrian()
     {
+        if (!$this->hasOrderColumn('no_antrian')) {
+            return null;
+        }
+
         // Cek apakah di keranjang terdapat minimal 1 menu resto
         $hasRestoItem = collect($this->cart)->contains('is_resto', true);
         if (!$hasRestoItem) {
@@ -307,20 +344,11 @@ class Kasir extends Component
 
             $order = null;
             DB::transaction(function () use (&$order, $noAntrian) {
-                $order = Order::create([
-                    'order_id'        => 'KPDES-CASH-' . time(),
-                    'no_antrian'      => $noAntrian,
-                    'user_id'         => auth()->id(),
-                    'user_name'       => auth()->user()->name ?? null,
-                    'id_anggota'      => $this->id_anggota,
-                    'nama_pelanggan'  => $this->namaPelanggan ?: 'Umum',
-                    'total'           => $this->total,
-                    'discount_amount' => $this->discountAmount,
-                    'payment_method'  => 'tunai',
-                    'payment_status'  => 'paid',
-                    'payment_amount'  => $this->paymentAmount,
-                    'cart_items'      => $this->cart,
-                ]);
+                $orderId = 'KPDES-CASH-' . time();
+                $payload = $this->buildOrderPayload($orderId, 'tunai', $noAntrian);
+                $payload['payment_amount'] = $this->paymentAmount;
+
+                $order = Order::create($payload);
 
                 $this->reduceStock($this->cart);
             });
@@ -372,21 +400,10 @@ class Kasir extends Component
 
             $snapToken = \Midtrans\Snap::getSnapToken($params);
 
-            Order::create([
-                'order_id'        => $orderId,
-                'no_antrian'      => $noAntrian,
-                'user_id'         => auth()->id(),
-                'user_name'       => auth()->user()->name ?? null,
-                'id_anggota'      => $this->id_anggota,
-                'nama_pelanggan'  => $this->namaPelanggan ?: 'Umum',
-                'total'           => $this->total,
-                'discount_amount' => $this->discountAmount,
-                'payment_method'  => $this->paymentMethod,
-                'payment_status'  => 'pending',
-                'payment_amount'  => $this->total,
-                'snap_token'      => $snapToken,
-                'cart_items'      => $this->cart,
-            ]);
+            $payload = $this->buildOrderPayload($orderId, $this->paymentMethod, $noAntrian, $snapToken);
+            $payload['payment_amount'] = $this->total;
+
+            Order::create($payload);
 
             $this->dispatch('open-snap', snapToken: $snapToken);
             $this->closePaymentModal();
