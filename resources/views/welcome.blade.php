@@ -33,7 +33,7 @@
             <div class="logo-icon">
                 <img src="/img/logo/kopdes-logo-putih.png" class="logo-img" alt="Logo">
             </div>
-            <span class="logo-text">Simkopdes</span>
+            <span class="logo-text">Skyha</span>
         </div>
         <div class="nav-center">
             <a href="#hero" class="nav-link">Beranda</a>
@@ -52,7 +52,8 @@
             <span class="hero-badge">#KoperasiDigital</span>
             <h1>
                 {{ \App\Models\Setting::getValue('hero_title_line1', 'Manajemen') }} <br>
-                <span class="hero-highlight">{{ \App\Models\Setting::getValue('company_name', 'Koperasi Desa Merah Putih') }}</span>
+                <span
+                    class="hero-highlight">{{ \App\Models\Setting::getValue('company_name', 'Koperasi Desa Merah Putih') }}</span>
             </h1>
             <p class="hero-desc">Meningkatkan efisiensi dan transparansi operasional koperasi desa dengan teknologi
                 modern</p>
@@ -83,25 +84,31 @@
     </section>
 
     <!-- ========== LAYANAN =========== -->
-     <section class="container service">
+    <section class="container service">
         <!-- Layanan Utama -->
         <div class="text-center mb-16" id="layanan">
             <h2 class="text-3xl sm:text-4xl font-bold text-black mb-4">Layanan Kami</h2>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Fitur unggulan untuk mendukung operasional koperasi modern</p>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Fitur unggulan untuk mendukung operasional koperasi
+                modern</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {{-- Card 1: Manajemen Anggota --}}
-            <div class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
-                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
+            <div
+                class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+                <div
+                    class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
                     <flux:icon.user-group color="white" class="w-8 h-8" />
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-3">Manajemen Anggota</h3>
-                <p class="text-gray-600 text-sm leading-relaxed">Database anggota, simpanan, dan riwayat transaksi terintegrasi.</p>
+                <p class="text-gray-600 text-sm leading-relaxed">Database anggota, simpanan, dan riwayat transaksi
+                    terintegrasi.</p>
             </div>
 
             {{-- Card 2: Simpanan --}}
-            <div class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
-                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
+            <div
+                class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+                <div
+                    class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
                     <flux:icon.wallet color="white" class="w-8 h-8" />
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-3">Simpanan</h3>
@@ -109,29 +116,34 @@
             </div>
 
             {{-- Card 3: Gerai Sembako --}}
-            <div class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
-                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
+            <div
+                class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+                <div
+                    class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
                     <flux:icon.shopping-cart color="white" class="w-8 h-8" />
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-3">Gerai Sembako</h3>
-                <p class="text-gray-600 text-sm leading-relaxed">Transaksi penjualan cepat dengan manajemen stok otomatis.</p>
+                <p class="text-gray-600 text-sm leading-relaxed">Transaksi penjualan cepat dengan manajemen stok
+                    otomatis.</p>
             </div>
 
             {{-- Card 4: Laporan & Analitik --}}
-            <div class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
-                <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
+            <div
+                class="group bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+                <div
+                    class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform">
                     <flux:icon.chart-bar color="white" class="w-8 h-8" />
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-3">Laporan & Analitik</h3>
                 <p class="text-gray-600 text-sm leading-relaxed">Pantau kinerja keuangan dan SHU secara real-time.</p>
             </div>
         </div>
-     </section>
+    </section>
 
     <!-- ========== BERITA & KONTAK ========== -->
     <section id="informasi" class="min-h-screen flex items-center justify-center bg-white py-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            
+
             {{-- Judul Section --}}
             <div class="text-center mb-16">
                 <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Informasi & Kontak</h2>
@@ -139,7 +151,7 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
-                
+
                 {{-- ========== BERITA ========== --}}
                 <div class="bg-gray-50 rounded-3xl p-8 border border-gray-100">
                     {{-- Header --}}
@@ -153,25 +165,35 @@
                     {{-- List Berita --}}
                     <div class="space-y-4">
                         <!-- Berita 1 -->
-                        <a href="https://simkopdes.go.id/pers/berita/detail/6" class="group block bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
-                            <span class="text-xs font-semibold text-blue-600 uppercase tracking-wide">21 Juli 2025</span>
-                            <h4 class="mt-2 text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-relaxed">
-                                Presiden Prabowo Resmikan Kopdes Merah Putih, Momentum Kembalikan Sistem Ekonomi Ke Pasal 33 UUD 45
+                        <a href="https://simkopdes.go.id/pers/berita/detail/6"
+                            class="group block bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+                            <span class="text-xs font-semibold text-blue-600 uppercase tracking-wide">21 Juli
+                                2025</span>
+                            <h4
+                                class="mt-2 text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-relaxed">
+                                Presiden Prabowo Resmikan Kopdes Merah Putih, Momentum Kembalikan Sistem Ekonomi Ke
+                                Pasal 33 UUD 45
                             </h4>
                         </a>
 
                         <!-- Berita 2 -->
-                        <a href="https://simkopdes.go.id/pers/berita/detail/7" class="group block bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
-                            <span class="text-xs font-semibold text-blue-600 uppercase tracking-wide">21 Juli 2025</span>
-                            <h4 class="mt-2 text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-relaxed">
+                        <a href="https://simkopdes.go.id/pers/berita/detail/7"
+                            class="group block bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+                            <span class="text-xs font-semibold text-blue-600 uppercase tracking-wide">21 Juli
+                                2025</span>
+                            <h4
+                                class="mt-2 text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-relaxed">
                                 Prabowo Launching 80.000 Kopdes Merah Putih di Klaten Hari Ini
                             </h4>
                         </a>
 
                         <!-- Berita 3 -->
-                        <a href="https://simkopdes.go.id/pers/berita/detail/8" class="group block bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
-                            <span class="text-xs font-semibold text-blue-600 uppercase tracking-wide">20 Juli 2025</span>
-                            <h4 class="mt-2 text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-relaxed">
+                        <a href="https://simkopdes.go.id/pers/berita/detail/8"
+                            class="group block bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
+                            <span class="text-xs font-semibold text-blue-600 uppercase tracking-wide">20 Juli
+                                2025</span>
+                            <h4
+                                class="mt-2 text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-relaxed">
                                 Hari Ini Presiden RI Resmikan 80.000 Kopdes Merah Putih
                             </h4>
                         </a>
@@ -191,34 +213,38 @@
                     {{-- List Kontak --}}
                     <div class="space-y-4">
                         <!-- Email -->
-                        <div class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                        <div
+                            class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
                             <div class="w-11 h-11 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <flux:icon.envelope class="w-5 h-5 text-red-500" />
                             </div>
                             <div class="min-w-0">
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Email</p>
-                                <a href="mailto:{{ \App\Models\Setting::getValue('email', 'kopkelmerahputihsawanganbaru@gmail.com') }}" 
-                                class="text-sm text-gray-900 hover:text-blue-600 transition-colors break-all">
-                                    {{ \App\Models\Setting::getValue('email', 'kopkelmerahputihsawanganbaru@gmail.com') }}
+                                <a href="mailto:{{ \App\Models\Setting::getValue('email', 'kopkelmerahputihsawanganbaru@gmail.com') }}"
+                                    class="text-sm text-gray-900 hover:text-blue-600 transition-colors break-all">
+                                    {{ \App\Models\Setting::getValue('email', 'kopkelmerahputihsawanganbaru@gmail.com')
+                                    }}
                                 </a>
                             </div>
                         </div>
 
                         <!-- Telepon -->
-                        <div class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
-                            <div class="w-11 h-11 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div
+                            class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                            <div
+                                class="w-11 h-11 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <flux:icon.phone class="w-5 h-5 text-blue-500" />
                             </div>
                             <div class="min-w-0">
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Telepon</p>
-                                <a href="tel:{{ \App\Models\Setting::getValue('phone', '081219999922') }}" 
-                                class="text-sm text-gray-900 hover:text-blue-600 transition-colors">
+                                <a href="tel:{{ \App\Models\Setting::getValue('phone', '081219999922') }}"
+                                    class="text-sm text-gray-900 hover:text-blue-600 transition-colors">
                                     {{ \App\Models\Setting::getValue('phone', '0812-1999-9922') }}
                                 </a>
                                 @if(\App\Models\Setting::getValue('phone2'))
                                     <br>
-                                    <a href="tel:{{ \App\Models\Setting::getValue('phone2') }}" 
-                                    class="text-sm text-gray-900 hover:text-blue-600 transition-colors">
+                                    <a href="tel:{{ \App\Models\Setting::getValue('phone2') }}"
+                                        class="text-sm text-gray-900 hover:text-blue-600 transition-colors">
                                         {{ \App\Models\Setting::getValue('phone2') }}
                                     </a>
                                 @endif
@@ -226,8 +252,10 @@
                         </div>
 
                         <!-- Alamat -->
-                        <div class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
-                            <div class="w-11 h-11 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div
+                            class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                            <div
+                                class="w-11 h-11 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <flux:icon.map-pin class="w-5 h-5 text-green-500" />
                             </div>
                             <div class="min-w-0">
@@ -239,15 +267,18 @@
                         </div>
 
                         <!-- Pengaduan -->
-                        <div class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
-                            <div class="w-11 h-11 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div
+                            class="flex items-start gap-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                            <div
+                                class="w-11 h-11 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <flux:icon.flag class="w-5 h-5 text-orange-500" />
                             </div>
                             <div class="min-w-0">
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Pengaduan</p>
-                                <a href="https://lapor.go.id" target="_blank" 
-                                class="text-sm text-gray-900 hover:text-blue-600 transition-colors">
-                                    {{ \App\Models\Setting::getValue('complaint_contact', 'korwil@merahputih.kop.id | 08111-451-587') }}
+                                <a href="https://lapor.go.id" target="_blank"
+                                    class="text-sm text-gray-900 hover:text-blue-600 transition-colors">
+                                    {{ \App\Models\Setting::getValue('complaint_contact', 'korwil@merahputih.kop.id |
+                                    08111-451-587') }}
                                 </a>
                             </div>
                         </div>
